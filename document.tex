@@ -1,0 +1,62 @@
+\documentclass[11pt,a4paper,twoside,openright]{book}
+
+\usepackage{mystyle}
+
+\usepackage{import}
+
+\usepackage{geometry}
+
+\usepackage[subpreambles=true]{standalone}
+
+\addbibresource{tex/abstract/refs.bib}
+
+\begin{document}
+	\newgeometry{centering}
+	\pagenumbering{gobble}
+	\begin{titlepage}
+		\subimport{tex/title/}{title.tex}
+	\end{titlepage}
+	\restoregeometry
+
+	\frontmatter
+
+	\subimport{tex/abstract/}{abstract.tex}
+	\subimport{tex/acknowledgements/}{acknowledgements.tex}
+
+	\tableofcontents
+	\listoffigures
+	\listoftables
+
+	\mainmatter
+
+	\chapter{Introduction}
+		\subimport{tex/introduction/}{introduction.tex}
+
+	\chapter{Background}
+		\subimport{tex/background/}{background.tex}
+
+	\chapter{Approach}
+		\subimport{tex/approach/}{approach.tex}
+
+	\chapter{Implementation}
+		\subimport{tex/implementation/}{implementation.tex}
+
+	\chapter{Results and Evaluation}
+		\subimport{tex/evaluation/}{evaluation.tex}
+
+	\chapter{Future Work}
+		\subimport{tex/future/}{future.tex}
+
+	\chapter{Conclusions}
+		\subimport{tex/conclusions/}{conclusions.tex}
+
+	\chapter{Reflections on Learning}
+		\subimport{tex/reflections/}{reflections.tex}
+
+	\backmatter
+	\section*{Glossary}
+	\section*{Table of Abbreviations}
+	\section*{Appendices}
+
+	\printbibliography
+\end{document}

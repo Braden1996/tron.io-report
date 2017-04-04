@@ -1,0 +1,76 @@
+% Allow for UTF8 encoded characters
+\usepackage[utf8]{inputenc}
+
+% Set our document's language (for localisation)
+\usepackage[british]{babel}
+
+% Define how we want to handle references
+\usepackage[backend=biber,style=alphabetic,citestyle=authoryear]{biblatex}
+
+% Add a comma between reference author and year
+\renewcommand*{\nameyeardelim}{\addcomma\space}
+
+% Greater variety of quote functionality
+\usepackage[autostyle, english=british]{csquotes}
+\MakeOuterQuote{"}
+
+% Improve the display of our references
+\usepackage{hyperref}
+\usepackage{cleveref}
+
+% Quick and detailed reference
+\newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1}: \emph{\nameref*{#1}} (Page: \pageref*{#1})}}
+
+% Fix Citations
+% http://tex.stackexchange.com/questions/1687/hyperlink-name-with-biblatex-authoryear
+\DeclareCiteCommand{\cite}
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \printtext[bibhyperref]{\usebibmacro{cite}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+\DeclareCiteCommand*{\cite}
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \printtext[bibhyperref]{\usebibmacro{citeyear}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\parencite}[\mkbibparens]
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+    \printtext[bibhyperref]{\usebibmacro{cite}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+\DeclareCiteCommand*{\parencite}[\mkbibparens]
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+    \printtext[bibhyperref]{\usebibmacro{citeyear}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\footcite}[\mkbibfootnote]
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+  \printtext[bibhyperref]{ \usebibmacro{cite}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\footcitetext}[\mkbibfootnotetext]
+  {\usebibmacro{prenote}}
+  {\usebibmacro{citeindex}%
+   \printtext[bibhyperref]{\usebibmacro{cite}}}
+  {\multicitedelim}
+  {\usebibmacro{postnote}}
+
+\DeclareCiteCommand{\textcite}
+  {\boolfalse{cbx:parens}}
+  {\usebibmacro{citeindex}%
+   \printtext[bibhyperref]{\usebibmacro{textcite}}}
+  {\ifbool{cbx:parens}
+     {\bibcloseparen\global\boolfalse{cbx:parens}}
+     {}%
+   \multicitedelim}
+  {\usebibmacro{textcite:postnote}}
