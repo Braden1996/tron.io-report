@@ -7,4 +7,13 @@
 
 		\subsection{Large-scale performance}
 			Game lobbies should be distributed amongst a cluster, to reduce load when many lobbies are running concurrently.
+
+	\section{Improve AI}
+		The AI is fairly primitive and there exist several enhancements and optimisations which could be implemented. This section shall lightly touch upon some of these.
+
+	\section{Gameplay Features}
+		I've tried to design the current implementation in a flexible manner to reduce the complexity in adding additional features. In particular, this includes things such as player speed, size, colors etc...
+
+		Also the front-end, being built with React, is decoupled into components which can be extended upon without too much hassle. This is a good thing because the DOM can now be 'synced' with the game state.
+
 \end{document}
