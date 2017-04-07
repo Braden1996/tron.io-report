@@ -8,20 +8,20 @@
 
 \usepackage[subpreambles=true]{standalone}
 
-\addbibresource{tex/abstract/refs.bib}
+\addbibresource{tex/background/refs.bib}
 
 \begin{document}
 	\newgeometry{centering}
 	\pagenumbering{gobble}
 	\begin{titlepage}
-		\subimport{tex/title/}{title.tex}
+		\import{tex/title/}{title.tex}
 	\end{titlepage}
 	\restoregeometry
 
 	\frontmatter
 
-	\subimport{tex/abstract/}{abstract.tex}
-	\subimport{tex/acknowledgements/}{acknowledgements.tex}
+	\import{tex/abstract/}{abstract.tex}
+	\import{tex/acknowledgements/}{acknowledgements.tex}
 
 	\tableofcontents
 	\listoffigures
@@ -30,28 +30,28 @@
 	\mainmatter
 
 	\chapter{Introduction}
-		\subimport{tex/introduction/}{introduction.tex}
+		\import{tex/introduction/}{introduction.tex}
 
 	\chapter{Background}
-		\subimport{tex/background/}{background.tex}
+		\import{tex/background/}{background.tex}
 
 	\chapter{Design}
-		\subimport{tex/design/}{design.tex}
+		\import{tex/design/}{design.tex}
 
 	\chapter{Implementation}
-		\subimport{tex/implementation/}{implementation.tex}
+		\import{tex/implementation/}{implementation.tex}
 
 	\chapter{Results and Evaluation}
-		\subimport{tex/evaluation/}{evaluation.tex}
+		\import{tex/evaluation/}{evaluation.tex}
 
 	\chapter{Future Work}
-		\subimport{tex/future/}{future.tex}
+		\import{tex/future/}{future.tex}
 
 	\chapter{Conclusions}
-		\subimport{tex/conclusions/}{conclusions.tex}
+		\import{tex/conclusions/}{conclusions.tex}
 
 	\chapter{Reflections on Learning}
-		\subimport{tex/reflections/}{reflections.tex}
+		\import{tex/reflections/}{reflections.tex}
 
 	\backmatter
 	\section*{Glossary}
