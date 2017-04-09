@@ -3,23 +3,31 @@
 %\addbibresource{refs.bib}
 
 \begin{document}
-	"Your background section should end with a clear statement of the research questions problem your project is trying to answer. These will reflect the aim of your project, but will be different in that they explain the problem you are attempting to solve, e.g.,"
+	Before delving further, it is important we introduce some of the ideas that helped to form the presented solution. We shall discuss these throughout this chapter.
 
 	\section{The Game of Tron}
 		The game of Tron first emerged in response to a scene from the 1982 film bearing the same name, Tron \parencite{TronLightCycleBattle}. To help avoid ambiguity we shall first describe, in detail, the rules of the game; as they have been understood for this project.
 
-		Tron is a free-for-all game which can be played by two or more players. Players are spawned as a square, the size of one unit, and are uniformly distributed along the four sides of a square which enclose the game's arena. Initially, each player is \emph{directed} inward of the square.
+		Tron is a free-for-all game which can be played by two or more players. Players are spawned as a square and are uniformly distributed along the four sides of a square which encloses the game's arena. Initially, each player is \emph{directed} inward towards the square.
 
-		All players are perpetually in motion, travelling around the arena at the same constant speed. However, at any time, they're able to direct themselves either 90\si{\degree} left or 90\si{\degree} right.
+		All alive players are perpetually in motion, travelling around the arena at the same constant speed. However, at any time, they're able to direct themselves either 90\si{\degree} left or 90\si{\degree} right.
 
-		As a player travels, they leave a wall which occupies the entire area that they, at any time, had covered. We call this a \emph{trail}, and can be thought of as the travelled path.
+		As a player travels, they leave a wall which occupies the entire area that they have covered. We call this a \emph{trail}, and can be thought of as the travelled path of a particular player.
 
-		A player is considered \emph{dead} if they collide with: the borders of the arena, another player, or the trail of any player (including themselves).
+		A player is considered \emph{dead} if they collide with any of the following: the borders of the arena; any other player; or, the trail of any other player (including themselves).
 
 		The game is considered to be finished when there are less than two players alive. In the case where a single player is left alive, they are considered to be the \emph{winner}. Otherwise, the game is a \emph{draw}.
 
 	\section{Existing Games}
-		Talk about some of the existing browser based games. Maybe some brief history and the direction in which the standard is moving. For example, modern web-sites (web-applications) share many of the mechanics of a video-game. (real-time communication, expensive processing, prediction)
+		There are quite a few implementations of Tron out there; scaling from small/indie projects to a minigame within a AAA titles. We shall now discuss some of these implementations and provide a brief overview of what they offer.
+
+		First up is Fltron \parencite{Fltron}. Fltron is a flash-based, two-player, grid-base implementation of Tron which features a fairly skilful AI opponent. Although the game comes with quite a high amount of polish, it does not support multiplayer over a network. Also, Flash is slowly being phased out of use in favour of the new capabilities brought to the modern web with HTML5. \parencite{Html5Flash} 
+
+		Cycleblob \parencite{Cycleblob} is a more recent alternative which has migrated to the newer HTML5 technologies. It utilises WebGL \parencite{WebGl}, a low-level graphics API based upon OpenGL ES. What makes Cycleblob especially unique is that the game is played in three-dimensions on a variety of unusual shapes; such as a rounded cube and a torus. Similar to Fltron, it features a challenging AI opponent but lacks multiplayer capabilities.
+
+		Slither IO \parencite{SlitherIo} is an extremely popular browser-based game which, although is not a Tron game, is very similar in concept. Its most attractive quality is being that hundreds of players are able to simultaneously play together within the same instance. I believe this demonstrates the extent at which HTML5's networking capabilities can extend to. It is worth noting that Slither IO has no AI opponents - it is entirely player vs player.
+
+		To conclude, it seems that many of the new HTML5 technologies are indeed more than capable candidates in powering robust arcade games; eliminating the need for alternatives such as Flash. However, there doesn't seem to yet be a modern browser-base implementation of Tron.
 
 	\section{Technologies}
 		Discuss and justify all the many technologies which were considered during development. Mention things such as browser support and ease-of-use.
