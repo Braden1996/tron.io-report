@@ -23,24 +23,20 @@
 
 		First up is Fltron \parencite{Fltron}. Fltron is a flash-based, two-player, grid-base implementation of Tron which features a fairly skilful AI opponent. Although the game comes with quite a high amount of polish, it does not support multiplayer over a network. Also, Flash is slowly being phased out of use in favour of the new capabilities brought to the modern web with HTML5. \parencite{Html5Flash} 
 
-		Cycleblob \parencite{Cycleblob} is a more recent alternative which has migrated to the newer HTML5 technologies. It utilises WebGL \parencite{WebGl}, a low-level graphics API based upon OpenGL ES. What makes Cycleblob especially unique is that the game is played in three-dimensions on a variety of unusual shapes; such as a rounded cube and a torus. Similar to Fltron, it features a challenging AI opponent but lacks multiplayer capabilities.
+		Cycleblob \parencite{Cycleblob} is a more recent alternative which has migrated to the newer HTML5 technologies. It utilises \emph{WebGL} \parencite{WebGl}. What makes Cycleblob especially unique is that the game is played in three-dimensions on a variety of unusual shapes; such as a rounded cube and a torus. Similar to Fltron, it features a challenging AI opponent but lacks multiplayer capabilities.
 
 		Slither IO \parencite{SlitherIo} is an extremely popular browser-based game which, although is not a Tron game, is very similar in concept. Its most attractive quality is being that hundreds of players are able to simultaneously play together within the same instance. I believe this demonstrates the extent at which HTML5's networking capabilities can extend to. It is worth noting that Slither IO has no AI opponents - it is entirely player vs player.
 
 		To conclude, it seems that many of the new HTML5 technologies are indeed more than capable candidates in powering robust arcade games; eliminating the need for alternatives such as Flash. However, there doesn't seem to yet be a modern browser-base implementation of Tron.
 
-	\section{Technologies}
-		Discuss and justify all the many technologies which were considered during development. Mention things such as browser support and ease-of-use.
+	\section{Browser Technologies}
+		Web browsers now come packed with a wide array of different technologies, many of which accomplish very similar goals. This is demonstrated by the various technology stacks in which the currently existing browser games are built upon. In the following section we shall compare some of these competing technologies in attempt to justify our future design decisions.
 
-	\section{Game Specifics}
-		The techniques which were used to implement the game.
+		Many technologies built into the browser are capable of rendering some form of graphics for a video-game. Some of the possible contenders include: animating DOM elements around using JS, or even CSS; SVG; a canvas element powered by Canvas 2D; a canvas element powered by WebGL.
 
-		\subsection{Game}
-			Such as spatial data-structures
+		However, as we have no real concern for massively outdated browsers, there exist two primary contenders for video-game graphics; WebGL and Canvas. WebGL is a low-level graphics API, and is based upon OpenGL ES. It provides the developer with a high amount of control over the graphics pipeline and is also capable of 3D graphics. On the other hand, canvas 2D is (as the name suggests) intended more for relatively simple 2D graphics, and abstracts quite significantly away from the graphics pipeline - trading off control for ease-of-use.
 
-		\subsection{Networking}
-			snapshot-based networking, client prediction, lag compensation
+		For the task of network communication, there are many choices. However, the two main relevant technologies for modern browsers are WebSockets and WebRTC. The key differences between the two are that WebSockets works via TCP whilst WebRTC works via both TCP and UDP, and that WebSockets only supports full-duplex communication between a browser and a web server, whilst WebRTC's supports full-duplex communication between two browsers. 
 
-		\subsection{AI}
-			alpha-beta minimax, monte-carlo search tree
+		However, WebRTC requires signalling to take place in order to establish the connection. This is usually done using WebSockets. WebRTC is also a far newer standard and isn't that well supported across web-browsers.
 \end{document}
