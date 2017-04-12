@@ -1,13 +1,21 @@
 \documentclass{standalone}
-% Load any packages needed for this document
+
 \begin{document}
-	What specifically does the user do? (display, send input, receive state)
-	What specifically does the server do? (run game, manage server lobbies, communicate game state, apply user input, call ai process)
+	Firstly, throughout development Git has been used for version control; the repository is hosted on GitHub\parencite{TronGitRepo}. A todo-list full of various development tasks exists within the root directory of the repository. This helped to maintain an efficient workflow and to document thoughts for later development sessions. Efforts were also made to document and lint all produced source-code.
 
-	
+	The produced implementation consist of many aspects, most of which can be categorised into one of three groups: game mechanics, network communications and artificial intelligence. Thus, where possible, we shall try to discuss each one of these categories separately. However, before that we shall first provide an overview of the system and describe the relation between some of its core components.
 
-	\section{Work Flow}
-		Git, todolist, scripts for common tasks etc...
+	As the game is to be played in a web-browser, we will be making use of the three fundamental web languages, those being HTML, CSS, and JavaScript. These three languages, and the standards which govern them, allow us to confidently write portable code which will run identically within the majority of web-browsers. Sadly, this isn't always the case as many browsers do not support the most up-to-date standard; assuming it follows it in the first place...
+
+	Now, the majority of our game, for the client-side at least, is programmed in JavaScript; allowing it to run in web-browsers. However, due to the compatibility issues mentioned above, we have wrote our game according to the ECMAScript2015 standard \parencite{ECMAScript2015} and transpile it to a more commonly supported syntax using Babel\parencite{Babel}.
+
+	Transpiling to JavaScript has become somewhat the norm in the realm of modern front-end web-development. In recent years, many new programming languages have in fact emerged under the sole purpose of being transpiled into JavaScript. The reason we chose not to use one of these new languages is because it masks away a lot of the underlying code which the browser is expected to run; creating another layer for things to potentially go wrong.
+
+	As the game was to be built for a web-browser, we already have access to a wide range of graphical components, as per the HTML specification. These are useful for components such as buttons and lists. However, it is quite cumbersome to maintain a proper reflection of our game's state (which resides within the JavaScript environment) onto our DOM. This is quite a frequent issue with web-applications and is the basis for many very popular frameworks. With this in mind, along with desire to learn a new framework and the curiosity to find out as to how helpful it would be with this project; React\parencite{React} and Redux\parencite{Redux} have been used to help handle the view layer.
+
+	Given that we already have to use Javascript for our front-end game code, it makes sense to not bring in another language for our back-end. This has a myriad of benefits including not having to deal with the additional quirks of a separate programming language and eliminating the hassle of maintaining two separate implementations of code that is identical in purpose. Hence for the back-end, on the server, we use Node.js\parencite{NodeJs}.
+
+	Somewhere early on during development, having already settled on the aforementioned technologies, it began more and more difficult to maintain an efficient work-flow whilst developing. That inspired the decision to transition the project to use the React Universally \parencite{ReactUniversally} starter-kit; a boilerplate project with a bare-bones project base structure and various scripts to help automate the tedious build/watch process.
 		
 	\section{Game Specifics}
 		There are a near endless range of techniques that can be utilised for game development. Here we shall introduce some of the key techniques
