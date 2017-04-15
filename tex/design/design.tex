@@ -1,5 +1,7 @@
 \documentclass{standalone}
 
+\usepackage{placeins}
+
 \begin{document}
 	Firstly, throughout development Git has been used for version control; the repository is hosted on GitHub\parencite{TronGitRepo}. A todo-list full of various development tasks exists within the root directory of the repository. This helped to maintain an efficient workflow and to document thoughts for later development sessions. Efforts were also made to document and lint all produced source-code.
 
@@ -60,10 +62,40 @@
 
 			Instead of checking for collisions against every object in the arena, we have utilised the uniform grid spatial data-structure. This allows us to divide the arena into a grid of arrays, where each array holds references to the objects that reside within its bounded space. Thus, when checking for a collision, we only need to check against objects that are held within the array(s) that our target object intersects with; reducing the search space quite substantially.
 
-			\begin{figure}[hp!]
-				\includegraphics[width=\textwidth]{resources/images/uniformgrid.png}
+			To populate our collision data-structure, we generate a series of rectangles representing each individual line-segment that forms the player's trail - from their current position, to the position they were spawned at. This is the stage at which we take into account the players' size.
+
+			\begin{figure}[!htbp]
+				\centering
+				\includegraphics[width=.8\textwidth]{resources/images/uniformgrid.png}
 				\caption{Visualisation of uniform-grid data-structure, drawn by our game's draw debug mode.}
 			\end{figure}
+			\FloatBarrier
+
+			Once the search space has been reduced, we now need to check to see if any of the obtained objects collide with our target object. Conceptually, this is just checking if there exists an overlap between two rectangles; a very simple calculation. However, as we want players to stop at the precise moment at which they crashed, we must calculate the intersection point and then offset it appropriately using the size of the two players.
+
+			This boils down to two distinct cases: \footnote{Please note that, in our collision case diagrams, the black dot within a player represents their position point. \label{blackDotDiagram}}
+			\begin{enumerate}
+    		\item
+    			\textbf{Case}: player collides with another player - who is not heading in an opposing direction.\\
+					\textbf{Solution}: reposition the crashed player by appropriately calculating an offset distance from the player they hit - based upon both their sizes. Using the crashed player's travelling direction for the offset's sign. \\
+					\begin{minipage}{\linewidth}
+						\centering
+						\captionsetup{width=.8\linewidth}
+	          \includegraphics[width=.8\linewidth]{resources/images/collision/side.png}%
+	          \captionof{figure}{Example of a sideways collision. On the left, two players are depicted in their unfixed positions. Whilst on the right, they're now shown in their relative position.}
+	    		\end{minipage}
+				\item 
+					\textbf{Case}: head-on collision between two players.\\
+					\textbf{Solution}: move each player backwards by half the sum of their \emph{overlap} and \emph{overshoot}.\\
+					\begin{minipage}{\linewidth}
+						\centering
+						\captionsetup{width=.8\linewidth}
+	          \includegraphics[width=.8\linewidth]{resources/images/collision/headon.png}%
+	          \captionof{figure}{Example of a head-on collision. On the left, two players are depicted in their unfixed positions. Whilst on the right, they're now shown in their relative position.}
+	    		\end{minipage}
+			\end{enumerate}
+
+
 
 	\section{Game Specifics}
 		There are a near endless range of techniques that can be utilised for game development. Here we shall introduce some of the key techniques
