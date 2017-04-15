@@ -51,9 +51,19 @@
     \end{description}
 
 		\subsubsection{Game Loop}
-			The game loop is charged with updating our game state and redrawing the graphics upon every tick
+			The game loop is of a critical importance, it is charged with updating our game state and redrawing the graphics repeatedly at some fixed interval; known as a \emph{tick}. In principle, this entails calling some function continuously at some fixed rate.
+
+			Both the client and server each implement their game loops slightly differently. The server needs to run fast enough to process user input and calculate updates with minimal perceptible latency. Whilst the client just runs with the purpose of redrawing the scene fast enough to create the illusion of smooth game-play. By default, both the client's and server's game loop runs at a tick-rate of once every 15 milliseconds - approximately 66 times a second. \footnote{This is considered the standard for video-games; faster rates, in most cases, have near indistinguishable benefit.}
 
 		\subsubsection{Collision Detection} \label{collisionDetection}
+			Many existing Tron implementations internally use a grid-based arena, that is a play occupies an entire whole cell of the arena. This enables collision look-ups to be performed in constant time, by simply indexing an array. However, our implementation allows players to move with an incredibly high-degree of precision\parencite{JsNumbers}. Unfortunately, this does complicate collision lookups.
+
+			Instead of checking for collisions against every object in the arena, we have utilised the uniform grid spatial data-structure. This allows us to divide the arena into a grid of arrays, where each array holds references to the objects that reside within its bounded space. Thus, when checking for a collision, we only need to check against objects that are held within the array(s) that our target object intersects with; reducing the search space quite substantially.
+
+			\begin{figure}[hp!]
+				\includegraphics[width=\textwidth]{resources/images/uniformgrid.png}
+				\caption{Visualisation of uniform-grid data-structure, drawn by our game's draw debug mode.}
+			\end{figure}
 
 	\section{Game Specifics}
 		There are a near endless range of techniques that can be utilised for game development. Here we shall introduce some of the key techniques
