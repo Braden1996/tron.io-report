@@ -95,7 +95,19 @@
 	    		\end{minipage}
 			\end{enumerate}
 
+	\subsection{Network Communication}
+		For a game to be multiplayer, all players need to share the same consistent experience across a network, i.e. they need to all be playing on the same game state. So this raises the question on how to synchronise the game state between all connected players. There are two main methods to achieve a synchronised game state and, to some degree, we will be using ideas from both.
 
+		The first method is known as \emph{peer-to-peer lockstep}. It centres around the idea of the game being modelled as turn-based and, before each turn, all non-deterministic events (such as user-input) are broadcasted to all players. Once all players have sent their input for this turn, each player then individually updates their game state; which will of course all end up being identical. The primary flaw in this technique is that all players are forced to play at the latency of the player with the weakest connection. This would be extremely frustrating for Tron, as each time you try to move you have to wait for the player with the weakest connection.
+
+		The second method is known as \emph{client/server}. It entails having a single authoritative game-state kept on a server, that is then communicated between all players. When a player wants to perform an action, they must communicate said action to the server. The server will then apply the action and communicate the new state to all connected players. However, this solution makes no compromises for latency. For example, the servers state is forever being updated and it will often receive actions from connected players that were made under the assumption the game is at some previous state.
+
+		The developed solution entails the use of several techniques. At its core, it is a client-server model. However, we make use of two mechanisms known as \emph{lag compensation}\parencite{LagCompensation} and \emph{client-side prediction}\parencite{LagPrediction} which help to reduce the negative effects of latency.
+
+		Simply put, lag compensation enables the server to `rewind` time when applying the input of a user; compensating for any latency that may have occurred. Whilst lag prediction allows clients to mimic the server, including the immediate processing of their input. See \parencite{LatencyCompensating} for a more thorough description.
+
+		\subsection{State Communication}
+			Communicating the entire game state after each tick is quite an incredibly infeasible goal.
 
 	\section{Game Specifics}
 		There are a near endless range of techniques that can be utilised for game development. Here we shall introduce some of the key techniques
