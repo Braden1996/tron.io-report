@@ -23,7 +23,7 @@
 
 	The source code is split into three main directories: \emph{shared}, \emph{client}, and \emph{server}. The \emph{shared} directory contains the bulk of our application, including source which is rendered server-side to be served to a client. Whilst the \emph{client} directory is for browser specific source that will not be used server-side or for the purpose of server-side rendering. Similarly, \emph{server} is for source which is executed on our node server.
 
-	\subsection{Game Mechanics}
+	\section{Game Mechanics}
 		The source-code for Tron's game mechanics exist primarily within the \emph{game} sub-directory inside \emph{shared}. There have been attempts to keep it as decoupled as possible from the various libraries we've brought in. This was done to help reduce the risk of delay caused by a library that isn't explicitly required for the main goal of the application.
 
 		The entire game state is stored within a single mutable JavaScript object. There exist numerous operations which can be applied to the state, each in the form of a function that take the state and additional parameters, if applicable. For the case when mutability is not desired, there exists a \emph{copyState} operation which explicitly copies the entire state and rebuilds the cache.
@@ -52,12 +52,12 @@
       	\end{description}
     \end{description}
 
-		\subsubsection{Game Loop}
+		\subsection{Game Loop}
 			The game loop is of a critical importance, it is charged with updating our game state and redrawing the graphics repeatedly at some fixed interval; known as a \emph{tick}. In principle, this entails calling some function continuously at some fixed rate.
 
 			Both the client and server each implement their game loops slightly differently. The server needs to run fast enough to process user input and calculate updates with minimal perceptible latency. Whilst the client just runs with the purpose of redrawing the scene fast enough to create the illusion of smooth game-play. By default, both the client's and server's game loop runs at a tick-rate of once every 15 milliseconds - approximately 66 times a second. \footnote{This is considered the standard for video-games; faster rates, in most cases, have near indistinguishable benefit.}
 
-		\subsubsection{Collision Detection} \label{collisionDetection}
+		\subsection{Collision Detection} \label{collisionDetection}
 			Many existing Tron implementations internally use a grid-based arena, that is a play occupies an entire whole cell of the arena. This enables collision look-ups to be performed in constant time, by simply indexing an array. However, our implementation allows players to move with an incredibly high-degree of precision\parencite{JsNumbers}. Unfortunately, this does complicate collision lookups.
 
 			Instead of checking for collisions against every object in the arena, we have utilised the uniform grid spatial data-structure. This allows us to divide the arena into a grid of arrays, where each array holds references to the objects that reside within its bounded space. Thus, when checking for a collision, we only need to check against objects that are held within the array(s) that our target object intersects with; reducing the search space quite substantially.
@@ -95,29 +95,26 @@
 	    		\end{minipage}
 			\end{enumerate}
 
-	\subsection{Network Communication}
+	\section{Network Communication}
 		For a game to be multiplayer, all players need to share the same consistent experience across a network, i.e. they need to all be playing on the same game state. So this raises the question on how to synchronise the game state between all connected players. There are two main methods to achieve a synchronised game state and, to some degree, we will be using ideas from both.
 
 		The first method is known as \emph{peer-to-peer lockstep}. It centres around the idea of the game being modelled as turn-based and, before each turn, all non-deterministic events (such as user-input) are broadcasted to all players. Once all players have sent their input for this turn, each player then individually updates their game state; which will of course all end up being identical. The primary flaw in this technique is that all players are forced to play at the latency of the player with the weakest connection. This would be extremely frustrating for Tron, as each time you try to move you have to wait for the player with the weakest connection.
 
-		The second method is known as \emph{client/server}. It entails having a single authoritative game-state kept on a server, that is then communicated between all players. When a player wants to perform an action, they must communicate said action to the server. The server will then apply the action and communicate the new state to all connected players. However, this solution makes no compromises for latency. For example, the servers state is forever being updated and it will often receive actions from connected players that were made under the assumption the game is at some previous state.
+		The second method is known as \emph{client/server}. It entails having a single authoritative game-state kept on a server, that is then communicated between all players. When a player wants to perform an action, they must communicate said action to the server. The server will then apply the action and communicate the updated state to all connected players. However, this solution makes no compromises for latency. For example, the server's state is forever being updated and it will often receive actions from connected players that were made under the assumption the game is still at some previous state.
 
-		The developed solution entails the use of several techniques. At its core, it is a client-server model. However, we make use of two mechanisms known as \emph{lag compensation}\parencite{LagCompensation} and \emph{client-side prediction}\parencite{LagPrediction} which help to reduce the negative effects of latency.
+		Our developed solution entails the use of several techniques. At its core, it is a client-server model. However, we make use of two mechanisms known as \emph{lag compensation}\parencite{LagCompensation} and \emph{client-side prediction}\parencite{LagPrediction} which help to reduce the negative effects of latency.
 
 		Simply put, lag compensation enables the server to `rewind` time when applying the input of a user; compensating for any latency that may have occurred. Whilst lag prediction allows clients to mimic the server, including the immediate processing of their input. See \parencite{LatencyCompensating} for a more thorough description.
 
-		\subsection{State Communication}
-			Communicating the entire game state after each tick is quite an incredibly infeasible goal.
+		Communicating the entire game state after each tick is an incredibly infeasible task; each player would be required to communicate with the server at a rate faster than the game's tick-rate.
 
-	\section{Game Specifics}
-		There are a near endless range of techniques that can be utilised for game development. Here we shall introduce some of the key techniques
+		Our solution to this problem is quite a simple one. When the client receives a message containing the updated state, they immediately reply to the server with an acknowledgement. The server will interpret this acknowledgement as a request to prepare the next state transmission.
 
-		\subsection{Game}
-			Such as spatial data-structures
+		To further reduce the latency of communication, we can also reduce the payload size of each state transmission. This is made possible by identifying that over the course of several ticks, the game state remains largely unchanged. Knowing this, we are able to keep in memory the last state communicated to each player and when we need to transmit, just calculate a snapshot of the differences \footnote{We calculate and apply the differences using \emph{fast-json-patch}\parencite{FastJsonPatch}.} between the current state and the last one which was sent. We also don't bother sending the cache, and instead simply regenerate it on the client - which isn't too expensive of an operation, and doesn't hinder our server's authoritative game state.
 
-		\subsection{Networking}
-			snapshot-based networking, client prediction, lag compensation
+	\section{Artificial Intelligence}
+		In order our computer opponents to play the game, they need to be controlled by some artificial intelligence; some program which has an understanding of the game and can make sensible moves, as if it were a human player.
 
-		\subsection{AI}
-			alpha-beta minimax, monte-carlo search tree
+		
+		alpha-beta minimax, monte-carlo search tree
 \end{document}
