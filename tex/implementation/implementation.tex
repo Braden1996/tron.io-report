@@ -1,17 +1,29 @@
 \documentclass{standalone}
 
 \begin{document}
-	\section{Implementation}
-		Discuss any 'issues' that arose during development.
+	There were many decisions, and mistakes that influenced them, made throughout the design of the application. As all mention of these were omitted from the design chapter \fullref{chap:design} in order for it to remain concise, so we shall instead discuss them here.
 
-		\begin{itemize}
-			\item game loop performance.now better than time
-			\item colliding players head-on
-			\item quadtree -> uniform-grid
-			\item project structure
-			\item working with dependecies
-			\item networking heavily dependent on technology-related issues
-			\item ai complexity results in issues when performing in real-time.
-			\item minimax -> monte-carlo
-		\end{itemize}
+	\section{Project Structure}
+		\subsection{Dependencies}
+
+
+	\section{Game Mechanics}
+		\subsection{Game Loop}
+			Constructing the game loop is a seemingly simple task; a timer which would tick at a rate equal to our desired tick-rate. However, in fact, many issues were encountered.
+
+			On the client, we are able to use JavaScript's \emph{window.requestAnimationFrame()} \parencite{JsRequestAnimationFrame} which is ideal for a loop intended for creating animation through drawn graphics. However, this function is not available on our Server's Node environment; so we'll have to find a separate solution.
+
+			JavaScript's standard built-in timer, \emph{setTimeout()} \parencite{JsSetTimeout}, does not work with a sufficiently reliable accuracy - frequently off by several milliseconds. And its alternative, \emph{setImmediate()} \parencite{JsSetImmediate}, calls at such an incredibly high-frequency that it consumes too many resources.
+
+			Thankfully, it turns out that this problem has been tackled by others. One proposed solution \parencite{JsGameLoop} was to use \emph{setTimeout()} then switch to \emph{setImmediate()} when we enter the window of potential error.
+
+		\subsection{Head-on Player Collisions}
+
+		\subsection{Collision Data Structures}
+			\subsubsection{Quadtree vs Uniform Grid}
+
+			\subsubsection{Mutability}
+
+	\section{Artificial Intelligence}
+		minimax -> monte-carlo
 \end{document}

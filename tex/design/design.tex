@@ -133,4 +133,8 @@
 			\includegraphics[width=.8\textwidth]{resources/images/mcts.png}
 			\caption{Diagram depicting the Monte Carlo tree search algorithm, from \parencite{MonteCarloTreeSearchDiagram}.}
 		\end{figure}
+
+		On top of all of this, the simulations involved in calculating the artificial intelligence's move run in parallel to the rest of the game server. This is done by spinning off a child process, which will run on a separate core. Once a move has been calculated, it will communicate the result back to the server and then die.
+
+		The server will then apply lag compensation, once it receives the communicated move. This effectively allows simulations to take longer than the duration of a single tick; leading to moves that are generally better.
 \end{document}
