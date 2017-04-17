@@ -102,7 +102,7 @@
 
 		The second method is known as \emph{client/server}. It entails having a single authoritative game-state kept on a server, that is then communicated between all players. When a player wants to perform an action, they must communicate said action to the server. The server will then apply the action and communicate the updated state to all connected players. However, this solution makes no compromises for latency. For example, the server's state is forever being updated and it will often receive actions from connected players that were made under the assumption the game is still at some previous state.
 
-		Our developed solution entails the use of several techniques. At its core, it is a client-server model. However, we make use of two mechanisms known as \emph{lag compensation}\parencite{LagCompensation} and \emph{client-side prediction}\parencite{LagPrediction} which help to reduce the negative effects of latency.
+		Our developed solution entails the use of several techniques. At its core, it is a client-server model. But we make use of two mechanisms known as \emph{lag compensation}\parencite{LagCompensation} and \emph{client-side prediction}\parencite{LagPrediction} which help to reduce the negative effects of latency.
 
 		Simply put, lag compensation enables the server to `rewind` time when applying the input of a user; compensating for any latency that may have occurred. Whilst lag prediction allows clients to mimic the server, including the immediate processing of their input. See \parencite{LatencyCompensating} for a more thorough description.
 
@@ -113,8 +113,24 @@
 		To further reduce the latency of communication, we can also reduce the payload size of each state transmission. This is made possible by identifying that over the course of several ticks, the game state remains largely unchanged. Knowing this, we are able to keep in memory the last state communicated to each player and when we need to transmit, just calculate a snapshot of the differences \footnote{We calculate and apply the differences using \emph{fast-json-patch}\parencite{FastJsonPatch}.} between the current state and the last one which was sent. We also don't bother sending the cache, and instead simply regenerate it on the client - which isn't too expensive of an operation, and doesn't hinder our server's authoritative game state.
 
 	\section{Artificial Intelligence}
-		In order our computer opponents to play the game, they need to be controlled by some artificial intelligence; some program which has an understanding of the game and can make sensible moves, as if it were a human player.
+		In order for our computer opponent to play the game, they need to be controlled by some artificial intelligence; some program which has an understanding of the game and can make sensible moves, as if it were a human player. This is quite a complicated, especially given that our game is played in real-time.
 
-		
-		alpha-beta minimax, monte-carlo search tree
+		Our solution to this problem centres around the idea of the modelling the game to be both played on a grid and turn-based, then running simulations which play out the possible scenarios in which the game could develop. However, as we require our AI to make decisions within a very short amount of time, we are unable to check the entire search-space and instead must make use of a variety of techniques to help optimise the process.
+
+		Probably the most radical technique is to only run each simulation up until some fixed depth, at which point we then evaluate the current game state using an heuristic evaluation function. The effectiveness of this technique is heavily reliant on both the chosen fixed depth as well as the evaluation function.
+
+		The heuristic evaluation function we've designed uses an optimised version of the flood-fill algorithm, featured in the very high-performing implementation that was the winner of a Google AI competition - introduced in \fullref{sec:background-google-ai}. The core idea is to count player \emph{ownership} of grid-cells, in our model of the arena, based upon a heuristic distance measurement.
+
+		First, all players have their heuristic score initialised to 0. Then we calculate the minimum Manhattan distance between the AI player and all other alive players. We then apply flood-fill to calculate the distance from the current player to each empty grid-cell. Flood-fill is optimised by halting its process once the distance surpasses the previously calculated minimum distance. We are now left with a heuristic distance measurement.
+
+		For each grid-cell, we then apply the following process to score based upon cell ownership: for each player, increment 1 to their score for every other player that has a distance that is greater-than, or equal to, the current cell. If the other player does not have a recorded distance to the current cell, instead increment by 2.
+
+		Thus, a greater score indicates a stronger position; although not relative to other players.
+
+		Even with the reduction in search-space and optimised evaluation function, time is still limited. So, we use Monte Carlo tree search \parencite{MonteCarloTreeSearch} with UCB1 to only explore promising branches of the game tree. 
+		\begin{figure}[!htbp]
+			\centering
+			\includegraphics[width=.8\textwidth]{resources/images/mcts.png}
+			\caption{Diagram depicting the Monte Carlo tree search algorithm, from \parencite{MonteCarloTreeSearchDiagram}.}
+		\end{figure}
 \end{document}

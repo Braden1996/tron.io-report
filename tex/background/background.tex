@@ -39,4 +39,9 @@
 		For the task of network communication, there are many choices. However, the two main relevant technologies for modern browsers are WebSockets and WebRTC. The key differences between the two are that WebSockets works via TCP whilst WebRTC works via both TCP and UDP, and that WebSockets only supports full-duplex communication between a browser and a web server, whilst WebRTC's supports full-duplex communication between two browsers. 
 
 		However, WebRTC requires signalling to take place in order to establish the connection. This is usually done using WebSockets. WebRTC is also a far newer standard and isn't that well supported across web-browsers.
+
+	\section{Artificial Intelligence}
+		As talked about above, there are already several Tron implementation in existence which feature a sufficiently sophisticated computer opponent that is controlled by an artificial intelligence. Sadly, these implementations aren't accompanied by any source-code or documentation; making it very difficult to understand the techniques they're using.
+
+		However, after further research it was discovered that conveniently in 2010 Google sponsored an AI challenge\parencite{GoogleTronAi}, which received over 1400 entries, involving the creation of an AI capable of playing Tron; albeit in slightly different circumstances. Also, \emph{a1k0n}, the winner of the Competition, released a post-mortem\parencite{TronPostMortem} complete with source-code detailing their submission. \label{sec:background-google-ai}
 \end{document}
