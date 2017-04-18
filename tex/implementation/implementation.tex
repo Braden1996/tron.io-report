@@ -6,7 +6,6 @@
 	\section{Project Structure}
 		\subsection{Dependencies}
 
-
 	\section{Game Mechanics}
 		\subsection{Game Loop}
 			Constructing the game loop is a seemingly simple task; a timer which would tick at a rate equal to our desired tick-rate. However, in fact, many issues were encountered.
@@ -18,6 +17,9 @@
 			Thankfully, it turns out that this problem has been tackled by others. One proposed solution \parencite{JsGameLoop} was to use \emph{setTimeout()} then switch to \emph{setImmediate()} when we enter the window of potential error.
 
 		\subsection{Head-on Player Collisions}
+			Within the game loop, we first move all the players and then check each player to see if it has crashed. Once all players have been checked, we process these newly dead players by switching their alive flag to false and repositioning them to their previous position at the moment of impact.
+
+			In the case where two players die in a head-on collision, both players would be repositioned in such a way that they are not visibly touching - appearing to be an invalid death. To combat this issue, for the said case, a separate solution had to be created. This solution is described in \fullref{itm:headCollision}.
 
 		\subsection{Collision Data Structures}
 			\subsubsection{Quadtree vs Uniform Grid}
