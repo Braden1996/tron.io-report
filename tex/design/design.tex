@@ -102,7 +102,7 @@
 
 		The second method is known as \emph{client/server}. It entails having a single authoritative game-state kept on a server, that is then communicated between all players. When a player wants to perform an action, they must communicate said action to the server. The server will then apply the action and communicate the updated state to all connected players. However, this solution makes no compromises for latency. For example, the server's state is forever being updated and it will often receive actions from connected players that were made under the assumption the game is still at some previous state.
 
-		Our developed solution entails the use of several techniques. At its core, it is a client-server model. But we make use of two mechanisms known as \emph{lag compensation}\parencite{LagCompensation} and \emph{client-side prediction}\parencite{LagPrediction} which help to reduce the negative effects of latency.
+		Our developed solution entails the use of several techniques. At its core, it is a client-server model. But we make use of two mechanisms known as \emph{lag compensation}\parencite{LagCompensation} and \emph{client-side prediction}\parencite{LagPrediction} which help to reduce the negative effects of latency.\label{sec:lagCompensation}
 
 		Simply put, lag compensation enables the server to `rewind` time when applying the input of a user; compensating for any latency that may have occurred. Whilst lag prediction allows clients to mimic the server, including the immediate processing of their input. See \parencite{LatencyCompensating} for a more thorough description.
 

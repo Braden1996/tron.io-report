@@ -21,10 +21,18 @@
 
 			In the case where two players die in a head-on collision, both players would be repositioned in such a way that they are not visibly touching - appearing to be an invalid death. To combat this issue, for the said case, a separate solution had to be created. This solution is described in \fullref{itm:headCollision}.
 
-		\subsection{Collision Data Structures}
-			\subsubsection{Quadtree vs Uniform Grid}
+		\subsection{Game State}
+			\subsubsection{Collision Data Structures}
+				Currently, a uniform grid is used to store the objects within our arena, although originally a quad-tree was instead implemented and used. This worked, but for the case of Tron, a hierarchical structure doesn't hold all that much benefit over a much simpler uniform grid.
+
+				It also happens that a uniform grid is far easier to implement, simpler to test and works well in an environment where many objects remain static.
 
 			\subsubsection{Mutability}
+				Initially, the game's state was developed to be an immutable object; where all functions made no changes to the given game state, but instead returned an entirely new object with the desired changes applied. This helps to reduce obscure bugs and makes the code far easier to test - especially for unit tests.
+
+				However, it also required performing a deep copy of the game state prior to any single change to be made. This is an extremely costly operation to be performing within a game loop, specially when it would have to be performed several times per tick. Realising this wasn't viable, the application was modified to internally use a mutable game state and to manually copy it where need be (e.g. for lag compensation, see \fullref{sec:lagCompensation}).
+
+				Irritatingly, this caused some difficult to trace bugs. One of the most notable of these was related to copying the game state and collision data-structure within our game state's cache. In short, each object within the collision data-structure keeps a reference to the player which created it. When we then copied the game state, the stored objects did not have their player references updated to match those of the newly created player objects themselves. This resulted in a broke collision detection, related to the workings of our lag compensation.
 
 	\section{Artificial Intelligence}
 		minimax -> monte-carlo
