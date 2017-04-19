@@ -3,9 +3,6 @@
 \begin{document}
 	There were many decisions, and mistakes that influenced them, made throughout the design of the application. As all mention of these were omitted from the design chapter \fullref{chap:design} in order for it to remain concise, so we shall instead discuss them here.
 
-	\section{Project Structure}
-		\subsection{Dependencies}
-
 	\section{Game Mechanics}
 		\subsection{Game Loop}
 			Constructing the game loop is a seemingly simple task; a timer which would tick at a rate equal to our desired tick-rate. However, in fact, many issues were encountered.
@@ -35,5 +32,24 @@
 				Irritatingly, this caused some difficult to trace bugs. One of the most notable of these was related to copying the game state and collision data-structure within our game state's cache. In short, each object within the collision data-structure keeps a reference to the player which created it. When we then copied the game state, the stored objects did not have their player references updated to match those of the newly created player objects themselves. This resulted in a broke collision detection, related to the workings of our lag compensation.
 
 	\section{Artificial Intelligence}
-		minimax -> monte-carlo
+		Before arriving at the current solution, the Artificial Intelligence opponent player ran simulations using the minimax algorithm \parencite{minimax} with Alpha-beta pruning \parencite{alphaBeta}. The issue regarding this solution was that calculating a move took far too long - resulting in the chosen move to no longer necessarily be a good move.
+
+		Besides reducing the depth of our searches, hindering our AI's skill quite significantly, we could instead ignore further exploring paths in the game tree which often seem to lead to poor outcomes. This is essentially the premise of the Monte Carlo Tree Search, as discussed in \fullref{sec:design-ai}.
+
+	\section{Technology Integration}
+		Some of the most prevalent issues faced were those indirectly related to the project; specifically those which were instead associated to the discretional use of libraries, and other technologies, brought into use.
+
+		\subsection{Communication Technologies}
+			Our implemented application uses Web-Sockets to handle all communication with the server (see \fullref{designCommunicationTechnologies}). Although this method works well, it was desirable for the game to be player peer-to-peer - a requirement that is slightly more difficult to achieve. However, efforts were made to make a future transition less painless.
+
+			The main interest in running a peer-to-peer architecture was based around the aspect of reducing load on the server. The concept in mind was to pick the most-capable player in the game to be the acting game-sever, perhaps cycling through the players as an anti-cheat measure. However, one of the caveats of having a peer-to-peer architecture is that none of the connected players may be capable of running a playable game-server. For this case, the actual dedicated server could be used as a last-resort game-server.
+
+		 	Throughout the source-code, in particular the game-server, we attempt to abstract away from Node and Web-Sockets such that we do not unnecessarily construct constraints to an architecture that may be changed. There also existed experimental functionality as to how the dedicated server would communicate amongst all connected players who was the acting game-server.
+
+		\subsection{Redux}
+			Redux a predictable state container for JavaScript applications which is used client-side to manage the view layer, among other tasks (see \fullref{redux}). However,
+
+			Redux Saga \parencite{reduxSaga} is a JavaScript library that is a middleware for Redux. It attempts to make asynchronous actions, and their integration with Redux, far more straightforward. It heavily relies upon the use of JavaScript generators and is in principle based upon the saga pattern \parencite{sagas}.
+
+			However, integrating Redux Saga with web-sockets proved to be quite complicated. The developed solution first immediately establishes a connection with the server and maintains said connection. A read saga is then set-up which constantly listens for messages from the server, and upon receiving one will split out a Redux action containing the payload. The client is able to send messages to the server simply by distributing an action containing the desired payload. This action is then intercepted by our write saga, who relays it off to the server.
 \end{document}

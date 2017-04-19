@@ -13,7 +13,7 @@
 
 	Transpiling to JavaScript has become somewhat the norm in the realm of modern front-end web-development. In recent years, many new programming languages have in fact emerged under the sole purpose of being transpiled into JavaScript. The reason we chose not to use one of these new languages is because it masks away a lot of the underlying code which the browser is expected to run; creating another layer for things to potentially go wrong.
 
-	As the game was to be built for a web-browser, we already have access to a wide range of graphical components, as per the HTML specification. These are useful for components such as buttons and lists. However, it is quite cumbersome to maintain a proper reflection of our game's state (which resides within the JavaScript environment) onto our DOM. This is quite a frequent issue with web-applications and is the basis for many very popular frameworks. With this in mind, along with desire to learn a new framework and the curiosity to find out as to how helpful it would be with this project; React\parencite{React} and Redux\parencite{Redux} have been used to help handle the view layer.
+	As the game was to be built for a web-browser, we already have access to a wide range of graphical components, as per the HTML specification. These are useful for components such as buttons and lists. However, it is quite cumbersome to maintain a proper reflection of our game's state (which resides within the JavaScript environment) onto our DOM. This is quite a frequent issue with web-applications and is the basis for many very popular frameworks. With this in mind, along with desire to learn a new framework and the curiosity to find out as to how helpful it would be with this project; React\parencite{React} and Redux\parencite{Redux} have been used to help handle the view layer. \label{redux}
 
 	Given that we already have to use Javascript for our front-end game code, it makes sense to not bring in another language for our back-end. This has a myriad of benefits including not having to deal with the additional quirks of a separate programming language and eliminating the hassle of maintaining two separate implementations of code that is identical in purpose. Hence for the back-end, on the server, we use Node.js\parencite{NodeJs}.
 
@@ -112,7 +112,10 @@
 
 		To further reduce the latency of communication, we can also reduce the payload size of each state transmission. This is made possible by identifying that over the course of several ticks, the game state remains largely unchanged. Knowing this, we are able to keep in memory the last state communicated to each player and when we need to transmit, just calculate a snapshot of the differences \footnote{We calculate and apply the differences using \emph{fast-json-patch}\parencite{FastJsonPatch}.} between the current state and the last one which was sent. We also don't bother sending the cache, and instead simply regenerate it on the client - which isn't too expensive of an operation, and doesn't hinder our server's authoritative game state.
 
-	\section{Artificial Intelligence}
+		\label{designCommunicationTechnologies}
+		As introduced within the background section (see \fullref{communicationTechnologies}) there exist several technologies capable of handling the actual communication with a web-server; most notably Web-Sockets and Web-RTC. However, due to the use of a dedicated game-server running Node, Web-Sockets is our chosen communication technology.
+
+	\section{Artificial Intelligence} \label{sec:design-ai}
 		In order for our computer opponent to play the game, they need to be controlled by some artificial intelligence; some program which has an understanding of the game and can make sensible moves, as if it were a human player. This is quite a complicated, especially given that our game is played in real-time.
 
 		Our solution to this problem centres around the idea of the modelling the game to be both played on a grid and turn-based, then running simulations which play out the possible scenarios in which the game could develop. However, as we require our AI to make decisions within a very short amount of time, we are unable to check the entire search-space and instead must make use of a variety of techniques to help optimise the process.
@@ -134,7 +137,7 @@
 			\caption{Diagram depicting the Monte Carlo tree search algorithm, from \parencite{MonteCarloTreeSearchDiagram}.}
 		\end{figure}
 
-		On top of all of this, the simulations involved in calculating the artificial intelligence's move run in parallel to the rest of the game server. This is done by spinning off a child process, which will run on a separate core. Once a move has been calculated, it will communicate the result back to the server and then die.
+		On top of all of this, the simulations involved in calculating the artificial intelligence's move run in parallel to the rest of the game-server. This is done by spinning off a child process, which will run on a separate core. Once a move has been calculated, it will communicate the result back to the server and then die.
 
 		The server will then apply lag compensation, once it receives the communicated move. This effectively allows simulations to take longer than the duration of a single tick; leading to moves that are generally better.
 \end{document}
