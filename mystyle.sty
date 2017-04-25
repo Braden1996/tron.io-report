@@ -79,3 +79,83 @@
      {}%
    \multicitedelim}
   {\usebibmacro{textcite:postnote}}
+
+% Access to some cool colors.
+\usepackage[dvipsnames]{xcolor}
+
+% Define some common colors.
+\definecolor{formalshade}{rgb}{0.95,0.95,1}
+\colorlet{primary}{NavyBlue}
+
+% For adjustwidth environment.
+\usepackage[strict]{changepage}
+
+% For formal definitions.
+\usepackage{framed}
+
+% Environment of a fancy quotation box.
+% http://www.jevon.org/wiki/Fancy_Quotation_Boxes_in_Latex
+\newenvironment{formal}{%
+  \def\FrameCommand{%
+    \hspace{1pt}%
+    {\color{primary}\vrule width 2pt}%
+    {\color{formalshade}\vrule width 4pt}%
+    \colorbox{formalshade}%
+  }%
+  \MakeFramed{\advance\hsize-\width\FrameRestore}%
+  \noindent\hspace{-4.55pt}% disable indenting first paragraph
+  \begin{adjustwidth}{}{7pt}%
+  \vspace{2pt}\vspace{2pt}%
+}
+{%
+  \vspace{2pt}\end{adjustwidth}\endMakeFramed%
+}
+
+% Allow for code-listings
+\usepackage{listings}
+
+% Create command similar to \graphicspath{...}
+\newcommand*\lstinputlstingpath[1]{\lstset{inputpath=#1}}
+
+% Some pre-defined colors for our code-listing's style
+\definecolor{captiontext}{RGB}{0,0,0}
+\definecolor{captionbackground}{RGB}{210, 215, 211}
+\definecolor{string}{rgb}{0.6,0,0}
+\definecolor{keyword}{rgb}{0.5,0,0.35}
+\definecolor{comment}{rgb}{0.25,0.5,0.35}
+\definecolor{morecomment}{rgb}{0.25,0.35,0.75}
+
+% Default style for our listing captions
+\DeclareCaptionFont{white}{\color{captiontext}}
+\DeclareCaptionFormat{listing}{%
+  \hskip-3.5pt%
+  \colorbox{captionbackground}{%
+    \parbox{\textwidth-.5em}{\hspace{15pt}#1#2#3}%
+  }%
+  \vskip-4pt%
+}
+\captionsetup[lstlisting]{format=listing, labelfont=white, textfont=white, singlelinecheck=false, margin=0pt}
+
+% Default style for our code-listings
+\lstset{
+  breaklines=true,
+  postbreak=\raisebox{0ex}[0ex][0ex]{\ensuremath{\color{red}\hookrightarrow\space}},
+  numbers=left,
+  numberstyle=\scriptsize\color{black},
+  stringstyle=\color{string},
+  keywordstyle=\color{keyword}\bfseries,
+  commentstyle=\color{comment},
+  morecomment=[s][\color{morecomment}]{/**}{*/},
+  columns=fullflexible
+}
+
+% Style for code figures
+\lstdefinestyle{codefigure}{
+  rulecolor=\color{captionbackground},
+  frame=single,
+  framexleftmargin=2em,
+  numbersep=10pt,
+  xleftmargin=2em,
+  basicstyle=\small,
+  caption={\texttt{\lstname}}
+}

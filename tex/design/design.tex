@@ -3,7 +3,29 @@
 \usepackage{placeins}
 
 \begin{document}
-	Firstly, throughout development Git has been used for version control; the repository is hosted on GitHub\parencite{TronGitRepo}. A todo-list full of various development tasks exists within the root directory of the repository. This helped to maintain an efficient workflow and to document thoughts for later development sessions. Efforts were also made to document and lint all produced source-code.
+	Throughout the following chapter, we shall analyse the intricate specifications of our application and accordingly propose sensible design solutions. This will consist of describing the application as a whole, then delving into each of the individual aspects. By the end, the reader should obtain a strong understanding of what exactly our application does along with the utilised core techniques.
+
+	\section{Software Development Process}
+		Firstly, we shall describe the overall methodology and workflow that have been employed throughout the duration of development. These are of important consideration as they promote both an effective and productive approach to the creation of software. Much of what is to be described is inspired by the ideas expressed in \parencite{pragmaticProgrammer}.
+
+		As the application is not a collaborative undertaking, there is little-to-no need in sticking strictly to any specific paradigm or framework for the software development process; as it would most probably lead to unnecessary overhead and distraction from any relevant progress. However, it is still of purpose to state that development most closely resembles the set of principles described under Agile \parencite{beck2001agile}, in that the application's design and implementation occurred concurrently, with continuous adaptation.
+
+		Over the course of the development process, the Git \parencite{gitWeb} version control system has been used to track file changes. Among other benefits, this allows us to maintain a full history of our application's source code, enabling us to revert back to previous versions - removing undesired changes. To further the backup capabilities, the Git repository is hosted online at GitHub\parencite{TronGitRepo}.
+
+		In order to manage the various short-term goals throughout development, a todo-list (in the form of a plaintext file) has been maintained. The purpose of which was to help maintain an efficient workmflow and provide a medium for documenting design thoughts between development sessions.
+
+		To aid future developers, or those studying the application, all source-code has been passed through a lint utility. This helps to identify potential bugs and preserve a consistent coding standard - by identifying syntactic discrepancies. Also, the source code itself contains extensive documentation; in the form of both relevant variable names and comment annotations.
+
+		\subsection{Package Scripts}
+			We have also assembled a repertoire of scripts that serve the purpose of automating some of the tedious tasks which are executed on a regular basis. In abstracting away from these laborious procedures, we have reduced the chance of unnecessary complications whilst also improving the efficiency of working with the application.
+
+			Below is a curated list of the available scripts, along with a short description of their purpose. However, please mind that some reflect ideas we have yet to discuss. (for more detail, please see \fullref{sec:reactUniversally})
+			\begin{formal}
+				\input{packagescripts.tex}
+			\end{formal}
+
+	The reader can find a curated list of these scripts within the \emph{package.json}
+	Below is a curated list of these scripts, along with a short description of the purpose they solve:\footnote{Also, when a developer attempts to push to our GitHub repository our unit-test are automatically performed; aborting the push upon failure.}
 
 	The produced implementation consist of many aspects, most of which can be categorised into one of three groups: game mechanics, network communications and artificial intelligence. Thus, where possible, we shall try to discuss each one of these categories separately. However, before that we shall first provide an overview of the application and describe the relation between some of its core components.
 
@@ -17,6 +39,7 @@
 
 	Given that we already have to use Javascript for our front-end game code, it makes sense to not bring in another language for our back-end. This has a myriad of benefits including not having to deal with the additional quirks of a separate programming language and eliminating the hassle of maintaining two separate implementations of code that is identical in purpose. Hence for the back-end, on the server, we use Node.js\parencite{NodeJs}.
 
+	\label{sec:reactUniversally}
 	Somewhere early on during development, having already settled on the aforementioned technologies, it began more and more difficult to maintain an efficient work-flow whilst developing. That inspired the decision to transition the project to use the React Universally \parencite{ReactUniversally} starter-kit; a boilerplate project with a bare-bones project base structure and various scripts to help automate the tedious build/watch process.
 
 	React Universally also sets up Server-side rendering with React. This is helpful as it enables the server to perform an initial render of our application's components, then serve the result to the client. This makes the web-page appear to load faster, as the client is no longer required to perform this initial render themselves; they just mount the components then rehydrate the state.
@@ -113,7 +136,7 @@
 		To further reduce the latency of communication, we can also reduce the payload size of each state transmission. This is made possible by identifying that over the course of several ticks, the game state remains largely unchanged. Knowing this, we are able to keep in memory the last state communicated to each player and when we need to transmit, just calculate a snapshot of the differences \footnote{We calculate and apply the differences using \emph{fast-json-patch}\parencite{FastJsonPatch}.} between the current state and the last one which was sent. We also don't bother sending the cache, and instead simply regenerate it on the client - which isn't too expensive of an operation, and doesn't hinder our server's authoritative game state.
 
 		\label{designCommunicationTechnologies}
-		As introduced within the background section (see \fullref{communicationTechnologies}) there exist several technologies capable of handling the actual communication with a web-server; most notably Web-Sockets and Web-RTC. However, due to the use of a dedicated game-server running Node, Web-Sockets is our chosen communication technology.
+		As introduced within the background section (see \fullref{sec:browserTechnologies}) there exist several technologies capable of handling the actual communication with a web-server; most notably Web-Sockets and Web-RTC. However, due to the use of a dedicated game-server running Node, Web-Sockets is our chosen communication technology.
 
 	\section{Artificial Intelligence} \label{sec:design-ai}
 		In order for our computer opponent to play the game, they need to be controlled by some artificial intelligence; some program which has an understanding of the game and can make sensible moves, as if it were a human player. This is quite a complicated, especially given that our game is played in real-time.

@@ -1,0 +1,54 @@
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Creates an \texttt{webpack-bundle-analyze} session against the production build of the client bundle.}]
+yarn run analyze:client
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Creates an \texttt{webpack-bundle-analyze} session against the production build of the server bundle.}]
+yarn run analyze:server
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Builds the client and server bundles, with the output being optimized.}]
+yarn run build
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Builds the client and server bundles, with the output including development related code.}]
+yarn run build:dev
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Deletes any build output that would have originated from the other commands.}]
+yarn run clean
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Deploys your application to \href{https://zeit.co/now}{\texttt{now}}.}]
+yarn run deploy
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Starts a development server for both the client and server bundles.}]
+yarn run develop
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Executes \texttt{eslint} against the project.}]
+yarn run lint
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Executes the server. It expects you to have already built the bundlesusing the \texttt{yarn run build} command.}]
+yarn run start
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Runs the \texttt{jest} tests.}]
+yarn run test
+\end{lstlisting}
+
+\begin{lstlisting}[language=bash,style=codefigure,
+caption={Runs the \texttt{jest} tests and generates a coverage report.}]
+yarn run test:coverage
+\end{lstlisting}
