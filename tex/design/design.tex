@@ -12,46 +12,75 @@
 
 		Over the course of the development process, the Git \parencite{gitWeb} version control system has been used to track file changes. Among other benefits, this allows us to maintain a full history of our application's source code, enabling us to revert back to previous versions - removing undesired changes. To further the backup capabilities, the Git repository is hosted online at GitHub\parencite{TronGitRepo}.
 
-		In order to manage the various short-term goals throughout development, a todo-list (in the form of a plaintext file) has been maintained. The purpose of which was to help maintain an efficient workmflow and provide a medium for documenting design thoughts between development sessions.
+		In order to manage the various short-term goals throughout development, a todo-list (in the form of a plaintext file) has been maintained. The purpose of which was to help maintain an efficient workflow and provide a medium for documenting design thoughts between development sessions.
 
 		To aid future developers, or those studying the application, all source-code has been passed through a lint utility. This helps to identify potential bugs and preserve a consistent coding standard - by identifying syntactic discrepancies. Also, the source code itself contains extensive documentation; in the form of both relevant variable names and comment annotations.
 
 		\subsection{Package Scripts}
 			We have also assembled a repertoire of scripts that serve the purpose of automating some of the tedious tasks which are executed on a regular basis. In abstracting away from these laborious procedures, we have reduced the chance of unnecessary complications whilst also improving the efficiency of working with the application.
 
-			Below is a curated list of the available scripts, along with a short description of their purpose. However, please mind that some reflect ideas we have yet to discuss. (for more detail, please see \fullref{sec:reactUniversally})
+			Below is a curated list of the available scripts, along with a short description of their purpose.\footnote{Also, when a developer attempts to push to the GitHub repository, our unit-test are automatically performed; aborting the push upon failure.} However, please mind that some reflect ideas we have yet to discuss. (for more detail, please see \fullref{sec:reactUniversally})
 			\begin{formal}
 				\input{packagescripts.tex}
 			\end{formal}
 
-	The reader can find a curated list of these scripts within the \emph{package.json}
-	Below is a curated list of these scripts, along with a short description of the purpose they solve:\footnote{Also, when a developer attempts to push to our GitHub repository our unit-test are automatically performed; aborting the push upon failure.}
+	\section{General Design}
+		The application itself is quite a large undertaking, as it comprises a multitude of different aspects. Most of which can be categorised into one of three groups: game mechanics, network communications, and artificial intelligence. Therefore, where possible, we shall try to discuss each one of these categories separately. But first of all, we shall introduce the reader with an overview of the application and describe the relation between some of its core components.
 
-	The produced implementation consist of many aspects, most of which can be categorised into one of three groups: game mechanics, network communications and artificial intelligence. Thus, where possible, we shall try to discuss each one of these categories separately. However, before that we shall first provide an overview of the application and describe the relation between some of its core components.
+		\subsection{Architecture Overview}
+			Much of what has been designed is derived from ideas that relate to the game as a whole, that being the overall encompassing architecture. To aid the reader in understanding said content, we shall introduce them to a brief summary of the foundational ideas in which the game is to be built upon.
 
-	As the game is to be played in a web-browser, we will be making use of the three fundamental web languages, those being HTML, CSS, and JavaScript. These three languages, and the standards which govern them, allow us to confidently write portable code which will run identically within the majority of web-browsers. Sadly, this isn't always the case as many browsers do not support the most up-to-date standard; assuming it follows it in the first place...
+			At its heart, the game follow a client-server multiplayer game architecture. This is where a single device is designated to be responsible for processing user-input, updating the game state and communicating said game state to the connected players. The connected players are principally responsible for relaying input to the server and rendering graphics based upon the state communicated from the server.
 
-	Now, the majority of our game, for the client-side at least, is programmed in JavaScript; allowing it to run in web-browsers. However, due to the compatibility issues mentioned above, we have wrote our game according to the ECMAScript2015 standard \parencite{ECMAScript2015} and transpile it to a more commonly supported syntax using Babel\parencite{Babel}.
+		\subsection{Core Technologies}
+			As the game is to be played in a web-browser, we will be making use of the three fundamental web languages; HTML, CSS, and JavaScript. These three languages, and the standards which govern them, allow us to confidently write portable code which will run predictably within the majority of web-browsers. Although, sadly this is not always the case as it is notorious for many web-browsers to not always fully support the most up-to-date standard - assuming it follows it in the first place.
 
-	Transpiling to JavaScript has become somewhat the norm in the realm of modern front-end web-development. In recent years, many new programming languages have in fact emerged under the sole purpose of being transpiled into JavaScript. The reason we chose not to use one of these new languages is because it masks away a lot of the underlying code which the browser is expected to run; creating another layer for things to potentially go wrong.
+			The primary programming language for our client-side source-code is JavaScript; the standard core web-browser technology for DOM manipulation of a web-page. To help tackle the compatibility issue mentioned above, the all our JavaScript will conform according to the ECMAScript2015 standard \parencite{ECMAScript2015}. It shall then be transpiled to a more universally supported syntax using Babel \parencite{Babel}.
 
-	As the game was to be built for a web-browser, we already have access to a wide range of graphical components, as per the HTML specification. These are useful for components such as buttons and lists. However, it is quite cumbersome to maintain a proper reflection of our game's state (which resides within the JavaScript environment) onto our DOM. This is quite a frequent issue with web-applications and is the basis for many very popular frameworks. With this in mind, along with desire to learn a new framework and the curiosity to find out as to how helpful it would be with this project; React\parencite{React} and Redux\parencite{Redux} have been used to help handle the view layer. \label{redux}
+			Transpiling to JavaScript has become somewhat the norm in the realm of modern web-development. In recent years, many entirely new programming languages have emerged for the sole purpose of being transpiled into JavaScript. For this application, the decision to use an updated standard of JavaScript, as opposed to one of these entirely new languages, is to reduce the amount in which we abstract from the underlying code that is to be executed; removing another layer where issues could arise.
 
-	Given that we already have to use Javascript for our front-end game code, it makes sense to not bring in another language for our back-end. This has a myriad of benefits including not having to deal with the additional quirks of a separate programming language and eliminating the hassle of maintaining two separate implementations of code that is identical in purpose. Hence for the back-end, on the server, we use Node.js\parencite{NodeJs}.
+			As our game is designed to be played within a web-browser, we already have access to the wide range of graphical components and other features described within the HTML specification. Notably, this includes elements such as buttons, lists, hyper-links and CSS - which is used to describe the presentation of our web-document.
 
-	\label{sec:reactUniversally}
-	Somewhere early on during development, having already settled on the aforementioned technologies, it began more and more difficult to maintain an efficient work-flow whilst developing. That inspired the decision to transition the project to use the React Universally \parencite{ReactUniversally} starter-kit; a boilerplate project with a bare-bones project base structure and various scripts to help automate the tedious build/watch process.
+			As the logic and state of our game exists within JavaScript, we will need to frequently manipulate these HTML elements - such that a proper reflection of our game state is maintained. This type of structure closely resembles the Model–view–controller \parencite{MVC} software architectural pattern for implementing user interfaces. However, handling the view layer can prove to be quite a cumbersome task as many naive solutions scale very poorly, such that future adjustments may have adverse side affects or may just be very awkward to implement; making correctness difficult to conserve.
 
-	React Universally also sets up Server-side rendering with React. This is helpful as it enables the server to perform an initial render of our application's components, then serve the result to the client. This makes the web-page appear to load faster, as the client is no longer required to perform this initial render themselves; they just mount the components then rehydrate the state.
+			\begin{figure}[!htbp]
+				\centering
+				\includegraphics{resources/images/mvc.png}
+				\caption{Diagram depicting the Model–view–controller software architectural pattern, from \parencite{MVC}.}
+			\end{figure}
 
-	The source code is split into three main directories: \emph{shared}, \emph{client}, and \emph{server}. The \emph{shared} directory contains the bulk of our application, including source which is rendered server-side to be served to a client. Whilst the \emph{client} directory is for browser specific source that will not be used server-side or for the purpose of server-side rendering. Similarly, \emph{server} is for source which is executed on our node server.
+			\label{redux}
+			Thankfully, this is a very common problem faced during web-development, and there already exist many capable candidate solutions. With this in mind, along with the desire to learn a new framework, and the curiosity regarding its applicability in integration with this project; React\parencite{React} and Redux\parencite{Redux} have been employed to help manage the view layer.
+
+			React is a popular JavaScript framework that makes it relatively easy to create advance user-interfaces for web-applications. It allows you to design your application as a set of simple views for each state in your application, and will efficiently update and render only the appropriate components when data changes. In essence, this is done by constructing almost your entire application's view layer within JavaScript by building encapsulated components - each charged with managing their own state.
+
+			Redux is a separate library, but plays very well when used in conjunction with React. Simply put, it is a predictable state container for JavaScript applications. It aids in allowing the developer to write application that behave in a consistent manner, whilst providing tools to improve the developer's experience in regards to processes such as debugging.
+
+			Redux, in principle, requires the application's state to be stored in an object tree inside a single data \emph{store}. Each state is represented by a single immutable object. Changes to the state tree are made by emitting \emph{actions}. An \emph{action} is an object describing what happened during some event to the state. These \emph{actions} are then used to transform the state tree through the use of \emph{reducers}; a pure function, with \texttt{(state, action) => state} signature, describing how an action transforms the given state into the next state.
+
+			Given that we already have to use JavaScript for our front-end game code, it makes sense to not bring in another language for our back-end. This bears a myriad of benefits, such as not having to deal with the additional quirks of a separate programming language. Also, it eliminates the hassle of maintaining two separate implementations of code that is identical in purpose. This becomes especially relevant later on, when we introduce client-side prediction (see \fullref{clientPrediction}). Hence for the back-end, that is the code which will be executed on a dedicated server, we shall be utilising Node.js\parencite{NodeJs}.
+
+			Node.js, is a technology which serves as a JavaScript runtime environment allowing JavaScript to run in standalone, outside of a web-browser. It has become a major proponent of the \enquote{JavaScript everywhere} paradigm, allowing the meat of web-application development to unify around a single programming language. A concise description is provided on the front-page of its website:
+			\begin{formal}
+				\enquote{Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.} - \cite{NodeJs}
+			\end{formal}
+
+		\subsection{Boilerplate}
+			\label{sec:reactUniversally}
+			Somewhere early on during development, having already settled on the aforementioned technologies, it began more and more difficult to maintain an efficient development workflow. That inspired the decision to transition the project to the use of the React Universally \parencite{ReactUniversally} starter-kit; a boilerplate project with a bare-bones base structure along with various scripts to help automate the tedious build/watch transpile process required for our JavaScript code.
+
+			React Universally also sets up Server-side rendering with React. This is helpful as it enables the server to perform an initial render of our application's components, then serve the result to the client. This results in the web-page appearing to load faster, as the main layout would've been pre-rendered; so the client user does not experience the initial flickering of DOM elements as the view is mounted.
+
+			Regarding the Redux store, the state is simply injected directly into the web-document prior to being served to a client. Upon initialisation, the client immediately rehydrates the application using the transmitted state and mounts the React components.
+
+			The source code directly composing our application is split into three main directories: \emph{shared}, \emph{client}, and \emph{server}. The \emph{shared} directory contains the bulk of our application, including source which is rendered server-side to be served to a client. Whilst the \emph{client} directory is for browser specific source that is not to be used server-side, not even for the purpose of server-side rendering. In particular, it includes functionality such as user-input and establishing a live communication session with the server. In a similar respect, the \emph{server} direction contains all the source specific to our Node server.
 
 	\section{Game Mechanics}
-		The source-code for Tron's game mechanics exist primarily within the \emph{game} sub-directory inside \emph{shared}. There have been attempts to keep it as decoupled as possible from the various libraries we've brought in. This was done to help reduce the risk of delay caused by a library that isn't explicitly required for the main goal of the application.
+		Compared to other arcade games, Tron has relatively few fundamental game mechanics. However, with that being said, there are still many challenges that arise due to the game's fast-paced nature and critical requirement for accuracy. Throughout this section, we shall discuss some of the more integral problems regarding the game's core mechanics along with the designed solutions, and the techniques in which they use.
 
-		The entire game state is stored within a single mutable JavaScript object. There exist numerous operations which can be applied to the state, each in the form of a function that take the state and additional parameters, if applicable. For the case when mutability is not desired, there exists a \emph{copyState} operation which explicitly copies the entire state and rebuilds the cache.
+		Before we delve into the specifics, it is vital we first provide an overview of the game's state object. In video-game design, the game state refers to an object - or other data store - which contains all the data representing a game instance at some particular point in time.
 
-		Below is a breakdown of the structure for our game state object:
+		Below is a breakdown our game state object's structure:
 		\begin{description}
         \item[tick]: the number of times this state has ticked; inclusive of the current tick update.
         \item[progress]: the amount of time which has passed since the last tick update.
@@ -75,10 +104,19 @@
       	\end{description}
     \end{description}
 
-		\subsection{Game Loop}
-			The game loop is of a critical importance, it is charged with updating our game state and redrawing the graphics repeatedly at some fixed interval; known as a \emph{tick}. In principle, this entails calling some function continuously at some fixed rate.
+		Our game state itself must be implemented as a mutable object. This is due to the large overhead that immutability generates; primarily from computationally expensive processes, such as copying an abstract data-type. As immutability is optional, it therefore is simply not worth introducing it within the game loop - as it would degrade performance.
 
-			Both the client and server each implement their game loops slightly differently. The server needs to run fast enough to process user input and calculate updates with minimal perceptible latency. Whilst the client just runs with the purpose of redrawing the scene fast enough to create the illusion of smooth game-play. By default, both the client's and server's game loop runs at a tick-rate of once every 15 milliseconds - approximately 66 times a second. \footnote{This is considered the standard for video-games; faster rates, in most cases, have near indistinguishable benefit.}
+		Although having the game state be a mutable object does not directly interfere with our server, it does raise concern in regards to our client and their utilisation of Redux. This is because one of Redux's key principles, is that all data held within the \emph{store} must be immutable, such that all modifications to the state are performed solely by \emph{reducer} functions.
+
+		To avoid creating an unnecessary reliance and coupling of the project onto optional technologies, we do not want to meld our internal game code with Redux. Hence, for our client, when we receive a game state update from the server we copy it and commit both the original and copy into the \emph{store}. One of these stored game states will remain immutable, whilst the other will be fully mutable - hence unaware of updates.
+
+		This solution may currently appear rather strange, as at this stage it is too early to introduce the entire reasoning reasoning. However, simply put, it allows us to keep an authoritative state (what is known) and a predictive state (what should be). Our DOM will reflect the authoritative state, whilst the drawn graphics of the game will reflect the predictive state (for more information, see \fullref{sec:lagCompensation}).
+
+		The next major aspect of our game is the game loop. In principle, it is a section of code that runs continuously during game-play, at some interval. User input is processed, without blocking, during each \emph{tick} of the loop. The remainder of the \emph{tick} is then used to update the game's state and render graphics. It of critical importance, and is arguably the most employed pattern in game-design as it provides a very convenient and deterministic way in which the developer can structure their game.
+
+		Our game shall be utilising the game loop, and is heavily based around said pattern. In principle, the server needs to spin the game loop at a rate fast enough to process user-input and calculate updates without introducing noticeable latency. Whilst the client is only required to spin fast enough to create the illusion of animated graphics.
+
+		By default, both client and server will have their game loop configured to run at a tick-rate of once every 15 milliseconds - approximately 66 times a second. \footnote{This is considered the standard for video-games. In most cases, any faster rate does not have much of a distinguishable benefit.}
 
 		\subsection{Collision Detection} \label{collisionDetection}
 			Many existing Tron implementations internally use a grid-based arena, that is a play occupies an entire whole cell of the arena. This enables collision look-ups to be performed in constant time, by simply indexing an array. However, our implementation allows players to move with an incredibly high-degree of precision\parencite{JsNumbers}. Unfortunately, this does complicate collision lookups.
@@ -119,12 +157,14 @@
 			\end{enumerate}
 
 	\section{Network Communication}
+		\label{gameLobby}
 		For a game to be multiplayer, all players need to share the same consistent experience across a network, i.e. they need to all be playing on the same game state. So this raises the question on how to synchronise the game state between all connected players. There are two main methods to achieve a synchronised game state and, to some degree, we will be using ideas from both.
 
 		The first method is known as \emph{peer-to-peer lockstep}. It centres around the idea of the game being modelled as turn-based and, before each turn, all non-deterministic events (such as user-input) are broadcasted to all players. Once all players have sent their input for this turn, each player then individually updates their game state; which will of course all end up being identical. The primary flaw in this technique is that all players are forced to play at the latency of the player with the weakest connection. This would be extremely frustrating for Tron, as each time you try to move you have to wait for the player with the weakest connection.
 
 		The second method is known as \emph{client/server}. It entails having a single authoritative game-state kept on a server, that is then communicated between all players. When a player wants to perform an action, they must communicate said action to the server. The server will then apply the action and communicate the updated state to all connected players. However, this solution makes no compromises for latency. For example, the server's state is forever being updated and it will often receive actions from connected players that were made under the assumption the game is still at some previous state.
 
+		\label{clientPrediction}
 		Our developed solution entails the use of several techniques. At its core, it is a client-server model. But we make use of two mechanisms known as \emph{lag compensation}\parencite{LagCompensation} and \emph{client-side prediction}\parencite{LagPrediction} which help to reduce the negative effects of latency.\label{sec:lagCompensation}
 
 		Simply put, lag compensation enables the server to `rewind` time when applying the input of a user; compensating for any latency that may have occurred. Whilst lag prediction allows clients to mimic the server, including the immediate processing of their input. See \parencite{LatencyCompensating} for a more thorough description.
