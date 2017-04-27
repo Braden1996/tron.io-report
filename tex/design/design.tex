@@ -27,7 +27,7 @@
 	\section{General Design}
 		The application itself is quite a large undertaking, as it comprises a multitude of different aspects. Most of which can be categorised into one of three groups: game mechanics, network communications, and artificial intelligence. Therefore, where possible, we shall try to discuss each one of these categories separately. But first of all, we shall introduce the reader with an overview of the application and describe the relation between some of its core components.
 
-		\subsection{Architecture Overview}
+		\subsection{Architecture Overview} \label{sec:architectureOverview}
 			Much of what has been designed is derived from ideas that relate to the game as a whole, that being the overall encompassing architecture. To aid the reader in understanding said content, we shall introduce them to a brief summary of the foundational ideas in which the game is to be built upon.
 
 			At its heart, the game follow a client-server multiplayer game architecture. This is where a single device is designated to be responsible for processing user-input, updating the game state and communicating said game state to the connected players. The connected players are principally responsible for relaying input to the server and rendering graphics based upon the state communicated from the server.
@@ -81,28 +81,30 @@
 		Before we delve into the specifics, it is vital we first provide an overview of the game's state object. In video-game design, the game state refers to an object - or other data store - which contains all the data representing a game instance at some particular point in time.
 
 		Below is a breakdown our game state object's structure:
-		\begin{description}
-        \item[tick]: the number of times this state has ticked; inclusive of the current tick update.
-        \item[progress]: the amount of time which has passed since the last tick update.
-        \item[started]: a boolean indicating if a round of Tron is in progress.
-        \item[finished]: a boolean indicating if the current round has finished. \emph{undefined} if started is \emph{false}.
-        \item[arenaSize]: the number of cells within our game arena.
-        \item[playerSize]: the number of cells a player occupies within our game arena.
-        \item[speed]: the number of cells each player travels over the course of a millisecond.
-        \item[players]: an array containing an object for each player part of the current game. The following describes the structure of a single player object:
-        \begin{description}
-        	\item[id]: a unique string used to identify the player.
-        	\item[name]: an arbitrary string for other players to recognise this player.
-        	\item[alive]: a boolean indicating if the player is alive, or otherwise dead.
-        	\item[direction]: the direction (north, south, east, or west) in which the player is travelling.
-        	\item[position]: a \emph{point} (an array, in the form of [\emph{x, y}]), representing the player's current position in the grid.
-        	\item[trail]: an array of \emph{points} at which the player has changed direction. Used to construct a path of the area in which the player has travelled. However, the array has two special cases: the first element is the player's spawn point, and the last element is the point for the player's previous position.
-      	\end{description}
-        \item[cache]: a nested object containing various cache structures required by our state. The following describes the structure of the cache object:
-        \begin{description}
-        	\item[collisionStruct]: a data-structure in which we can check for player/trail collisions within our arena. See for more detail \fullref{collisionDetection}.
-      	\end{description}
-    \end{description}
+		\begin{formal}
+			\begin{description}
+	        \item[tick]: the number of times this state has ticked; inclusive of the current tick update.
+	        \item[progress]: the amount of time which has passed since the last tick update.
+	        \item[started]: a boolean indicating if a round of Tron is in progress.
+	        \item[finished]: a boolean indicating if the current round has finished. \emph{undefined} if started is \emph{false}.
+	        \item[arenaSize]: the number of cells within our game arena.
+	        \item[playerSize]: the number of cells a player occupies within our game arena.
+	        \item[speed]: the number of cells each player travels over the course of a millisecond.
+	        \item[players]: an array containing an object for each player part of the current game. The following describes the structure of a single player object:
+	        \begin{description}
+	        	\item[id]: a unique string used to identify the player.
+	        	\item[name]: an arbitrary string for other players to recognise this player.
+	        	\item[alive]: a boolean indicating if the player is alive, or otherwise dead.
+	        	\item[direction]: the direction (north, south, east, or west) in which the player is travelling.
+	        	\item[position]: a \emph{point} (an array, in the form of [\emph{x, y}]), representing the player's current position in the grid.
+	        	\item[trail]: an array of \emph{points} at which the player has changed direction. Used to construct a path of the area in which the player has travelled. However, the array has two special cases: the first element is the player's spawn point, and the last element is the point for the player's previous position.
+	      	\end{description}
+	        \item[cache]: a nested object containing various cache structures required by our state. The following describes the structure of the cache object:
+	        \begin{description}
+	        	\item[collisionStruct]: a data-structure in which we can check for player/trail collisions within our arena. See for more detail \fullref{collisionDetection}.
+	      	\end{description}
+	    \end{description}
+    \end{formal}
 
 		Our game state itself must be implemented as a mutable object. This is due to the large overhead that immutability generates; primarily from computationally expensive processes, such as copying an abstract data-type. As immutability is optional, it therefore is simply not worth introducing it within the game loop - as it would degrade performance.
 
@@ -116,7 +118,7 @@
 
 		Our game shall be utilising the game loop, and is heavily based around said pattern. In principle, the server needs to spin the game loop at a rate fast enough to process user-input and calculate updates without introducing noticeable latency. Whilst the client is only required to spin fast enough to create the illusion of animated graphics.
 
-		By default, both client and server will have their game loop configured to run at a tick-rate of once every 15 milliseconds - approximately 66 times a second. \footnote{This is considered the standard for video-games. In most cases, any faster rate does not have much of a distinguishable benefit.}
+		By default, both client and server will have their game loop configured to run at a tick-rate of once every 15 milliseconds - approximately 66 times a second. \footnote{This is considered the standard for video-games. In most cases, a faster rate does not provide any distinguishable benefit.}
 
 		\subsection{Collision Detection} \label{collisionDetection}
 			Many existing Tron implementations internally use a grid-based arena, that is a play occupies an entire whole cell of the arena. This enables collision look-ups to be performed in constant time, by simply indexing an array. However, our implementation allows players to move with an incredibly high-degree of precision\parencite{JsNumbers}. Unfortunately, this does complicate collision lookups.
@@ -156,7 +158,7 @@
 	    		\end{minipage}
 			\end{enumerate}
 
-	\section{Network Communication}
+	\section{Network Communication} \label{sec:networkCommunication}
 		\label{gameLobby}
 		For a game to be multiplayer, all players need to share the same consistent experience across a network, i.e. they need to all be playing on the same game state. So this raises the question on how to synchronise the game state between all connected players. There are two main methods to achieve a synchronised game state and, to some degree, we will be using ideas from both.
 
@@ -176,7 +178,7 @@
 		To further reduce the latency of communication, we can also reduce the payload size of each state transmission. This is made possible by identifying that over the course of several ticks, the game state remains largely unchanged. Knowing this, we are able to keep in memory the last state communicated to each player and when we need to transmit, just calculate a snapshot of the differences \footnote{We calculate and apply the differences using \emph{fast-json-patch}\parencite{FastJsonPatch}.} between the current state and the last one which was sent. We also don't bother sending the cache, and instead simply regenerate it on the client - which isn't too expensive of an operation, and doesn't hinder our server's authoritative game state.
 
 		\label{designCommunicationTechnologies}
-		As introduced within the background section (see \fullref{sec:browserTechnologies}) there exist several technologies capable of handling the actual communication with a web-server; most notably Web-Sockets and Web-RTC. However, due to the use of a dedicated game-server running Node, Web-Sockets is our chosen communication technology.
+		As introduced within the background section (see \fullref{sec:browserTechnologies}) there exist several technologies capable of handling the actual communication with a web-server; most notably Web-Sockets and Web-RTC. However, we have chosen to use Web-Sockets as our chosen communicated technology. This is because it is well supported, well documented and is does not provide us with extra hassle as we already have a dedicated game-server.
 
 	\section{Artificial Intelligence} \label{sec:design-ai}
 		In order for our computer opponent to play the game, they need to be controlled by some artificial intelligence; some program which has an understanding of the game and can make sensible moves, as if it were a human player. This is quite a complicated, especially given that our game is played in real-time.
@@ -193,7 +195,14 @@
 
 		Thus, a greater score indicates a stronger position; although not relative to other players.
 
-		Even with the reduction in search-space and optimised evaluation function, time is still limited. So, we use Monte Carlo tree search \parencite{MonteCarloTreeSearch} with UCB1 to only explore promising branches of the game tree. 
+		Even with the reduction in search-space and optimised evaluation function, time is still limited. So, we use Monte Carlo tree search \parencite{MonteCarloTreeSearch} with UCB1 to only explore promising branches of the game tree.
+
+		However, UCB1 takes into account \emph{wins} and \emph{loses}. Clearly, this conflicts with the idea of running simulations to some fixed depth. To combat this, when we reach the end of a simulation, we decide whether the said simulation was a \emph{win} or a \emph{loss} based upon some naive rules:
+		\begin{itemize}
+			\item If our player is dead, increment the losses by the total number of alive players.
+			\item Otherwise, increment wins by 1 (to reward being alive) plus 1 for each player that is either dead or have a lower heuristic score.
+		\end{itemize}
+
 		\begin{figure}[!htbp]
 			\centering
 			\includegraphics[width=.8\textwidth]{resources/images/mcts.png}

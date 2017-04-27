@@ -1,55 +1,64 @@
 \documentclass{standalone}
 
 \begin{document}
-	There were many decisions, and mistakes that influenced them, made throughout the design of the application. As all mention of these were omitted from the design chapter \fullref{chap:design} in order for it to remain concise, so we shall instead discuss them here.
+	Both the design and implementation processes occurred simultaneously, that is the implementation of our application evolved alongside the development of its final design. During the design chapter \fullref{chap:design}, we only discussed the final state of the system - to avoid creating confusion on what was actually created. However, throughout this chapter, we shall discuss some of the difficulties which were faced, as well as the mistakes that were made and the solutions which we arrived at.
 
-	\section{Game Mechanics}
-		\subsection{Game Loop}
-			Constructing the game loop is a seemingly simple task; a timer which would tick at a rate equal to our desired tick-rate. However, in fact, many issues were encountered.
+	\section{Game Loop}
+		Constructing the game loop is a seemingly simple task. In essence, it is a callback that some timer would make a call to at some fixed interval equal to our tick-rate. However, there were a number of quirks related to JavaScript's standard API which made this task not as straightforward as initially expected.
 
-			On the client, we are able to use JavaScript's \emph{window.requestAnimationFrame()} \parencite{JsRequestAnimationFrame} which is ideal for a loop intended for creating animation through drawn graphics. However, this function is not available on our Server's Node environment; so we'll have to find a separate solution.
+		On the client, we are able to use JavaScript's \emph{window.requestAnimationFrame()} \parencite{JsRequestAnimationFrame} function. This is called whenever the canvas is preparing to draw the next frame, giving us the opportunity to update the game state - basically hijacking the internal loop used within the browser. This technique worked during the early stages of development, but when we sought to run the game on the browser; it soon became apparent that obviously this function wouldn't exist in a Node.js environment. So, a separate solution needed to be realised.
 
-			JavaScript's standard built-in timer, \emph{setTimeout()} \parencite{JsSetTimeout}, does not work with a sufficiently reliable accuracy - frequently off by several milliseconds. And its alternative, \emph{setImmediate()} \parencite{JsSetImmediate}, calls at such an incredibly high-frequency that it consumes too many resources.
+		Research turned in the direction of JavaScript's standard built-in timer, \emph{setTimeout()} \parencite{JsSetTimeout}. However, after some short tests, said timer was concluded to be improper for the task as it did not tick with sufficiently reliable accuracy - often too late by many milliseconds. However, there existed an alternative function, \emph{setImmediate()} \parencite{JsSetImmediate}. 
 
-			Thankfully, it turns out that this problem has been tackled by others. One proposed solution \parencite{JsGameLoop} was to use \emph{setTimeout()} then switch to \emph{setImmediate()} when we enter the window of potential error.
+		Sadly, this function occupied a high amount of system resources due to it ticking at an incredibly high, and uncontrollable frequency. This resulted with us having to internally disregard calls if a tick was not scheduled.
 
-		\subsection{Head-on Player Collisions}
-			Within the game loop, we first move all the players and then check each player to see if it has crashed. Once all players have been checked, we process these newly dead players by switching their alive flag to false and repositioning them to their previous position at the moment of impact.
+		Thankfully, after extensive research online, it was discovered that this problem has been tackled by others. A proposed solution\parencite{JsGameLoop} was suggested that recommended to use \emph{setTimeout()} as the primary timer function then, when we enter the window of potential error, switch to \emph{setImmediate()} which provided us with a far greater accuracy. This seemed to work very well!
 
-			In the case where two players die in a head-on collision, both players would be repositioned in such a way that they are not visibly touching - appearing to be an invalid death. To combat this issue, for the said case, a separate solution had to be created. This solution is described in \fullref{itm:headCollision}.
+	\section{Head-on Player Collisions}
+		Within the game loop, during the update process of single tick, we first move each and every alive player. Afterwards, we perform a series of checks to identify which players have crashed. Once all players have been checked, we process said newly crashed players by officially \emph{killing} them - which mercifully only entails switching their alive flag to \texttt{false} and reposition them to their theoretical position at the exact moment of impact.
 
-		\subsection{Game State}
-			\subsubsection{Collision Data Structures}
-				Currently, a uniform grid is used to store the objects within our arena, although originally a quad-tree was instead implemented and used. This worked, but for the case of Tron, a hierarchical structure doesn't hold all that much benefit over a much simpler uniform grid.
+		However, once we began testing, a bug was discovered that players would be repositioned to seemingly incorrect locations after a collision. After further investigation, it was clear that this unexpected behaviour only occurred in the case where two players would collide in a head-on collision, that is they were travelling in opposing directions and met one-another.
 
-				It also happens that a uniform grid is far easier to implement, simpler to test and works well in an environment where many objects remain static.
+		After further thinking with regards to the problem, a solution was devised that modified the way in which players were repositioned. Instead, we would backtrack a player by an amount calculated by half the sum of the overshoot and overlap of the two colliding players. However, this was only necessary for the case in which a head-on collision had occurred. For more information, please see \fullref{itm:headCollision}
 
-			\subsubsection{Mutability}
-				Initially, the game's state was developed to be an immutable object; where all functions made no changes to the given game state, but instead returned an entirely new object with the desired changes applied. This helps to reduce obscure bugs and makes the code far easier to test - especially for unit tests.
+	\section{Mutability}
+		Initially, the game's state was developed to be an immutable object; where all functions made no changes to the given game state, but instead returned an entirely new object with the desired changes applied. This helps to reduce obscure bugs and makes the code far easier to test - especially for unit tests.
 
-				However, it also required performing a deep copy of the game state prior to any single change to be made. This is an extremely costly operation to be performing within a game loop, specially when it would have to be performed several times per tick. Realising this wasn't viable, the application was modified to internally use a mutable game state and to manually copy it where need be (e.g. for lag compensation, see \fullref{sec:lagCompensation}).
+		However, it also required performing a deep copy of the game state prior to any single change to be made. This is an extremely costly operation to be performing within a game loop, specially when it would have to be performed several times per tick. Realising this wasn't viable, the application was modified to internally use a mutable game state and to manually copy it where need be (e.g. for lag compensation, see \fullref{sec:lagCompensation}).
 
-				Irritatingly, this caused some difficult to trace bugs. One of the most notable of these was related to copying the game state and collision data-structure within our game state's cache. In short, each object within the collision data-structure keeps a reference to the player which created it. When we then copied the game state, the stored objects did not have their player references updated to match those of the newly created player objects themselves. This resulted in a broke collision detection, related to the workings of our lag compensation.
+		Irritatingly, this caused some difficult to trace bugs. One of the most notable of these was related to copying the game state and collision data-structure within our game state's cache. In short, each object within the collision data-structure keeps a reference to the player which created it. When we then copied the game state, the stored objects did not have their player references updated to match those of the newly created player objects themselves. This resulted in a broke collision detection, related to the workings of our lag compensation.
 
-	\section{Artificial Intelligence}
-		Before arriving at the current solution, the Artificial Intelligence opponent player ran simulations using the minimax algorithm \parencite{minimax} with Alpha-beta pruning \parencite{alphaBeta}. The issue regarding this solution was that calculating a move took far too long - resulting in the chosen move to no longer necessarily be a good move.
+	\section{Collision Data Structures}
+		In the early stages of the game's development, we would check every object within the arena when searching for collisions. Although this method worked well, and didn't result in any noticeable lag, further research into game development revealed how commonplace spatial data-structures were. This highlighted that our current collision detection mechanic was an urgent area for plausible improvement.
 
-		Besides reducing the depth of our searches, hindering our AI's skill quite significantly, we could instead ignore further exploring paths in the game tree which often seem to lead to poor outcomes. This is essentially the premise of the Monte Carlo Tree Search, as discussed in \fullref{sec:design-ai}.
+		Progress on the game soon advanced and the use of the hierarchical structure of a quad-tree was implemented and integrated into our game's collision detection, to help reduce the total search space when checking for collisions. This did show some considerable performance gain. However, after playing the game, it became apparent that it was trail line-segments were almost always intercepting multiple nodes - making the need for a hierarchical data-structure somewhat meaningless.
+
+		Hence, a uniform grid was instead implemented and integrated to help optimised our game's collision detection. A uniform grid also has the perk of being far easier to deal-with and works well for the case of Tron.
+
+		Also, to aid in both the creation and debugging of these two spatial data-structures, the game features a special \emph{debug} mode which would visualise the bounds for each node onto the game arena in the form of a semi-transparent overlay.
+
+	\section{AI Simulations}
+		As per our design, the game's computer players were powered by an artificial intelligence that ran simulations using a variant of the minimax algorithm \parencite{minimax} that featured alpha-beta pruning \parencite{alphaBeta} to avoid looking down unnecessary branches of the game tree; improving performance.
+
+		However, it was taking far too much time in order for the AI to calculate a suitable move. By the time the AI had calculated a move, the game state would've significantly progress; making their move now redundant - often leading to their undesired death.
+
+		There existed two clear ways in which this performance issue could be tackled. We could either restrict the breadth of our game-tree search, or restrict the depth. Restricting the depth of our AI's game-tree search exponentially reduced its ability to make educated moves - it performed extremely poorly. On the other hand, restricting the breadth of our game-tree search was highly dependent on the situation the AI player is current in; as many of the possible early moves are never simulated.
+
+		This inspired the idea to migrate to using the Monte Carlo Tree Search algorithm, as discussed in \fullref{sec:design-ai}. This allowed our AI to only explore branches of the game-tree that seemed promising; ignoring those branches that almost always led to poor outcomes.
 
 	\section{Technology Integration}
-		Some of the most prevalent issues faced were those indirectly related to the project; specifically those which were instead associated to the discretional use of libraries, and other technologies, brought into use.
-
-		\subsection{Communication Technologies}
-			Our implemented application uses Web-Sockets to handle all communication with the server (see \fullref{designCommunicationTechnologies}). Although this method works well, it was desirable for the game to be player peer-to-peer - a requirement that is slightly more difficult to achieve. However, efforts were made to make a future transition less painless.
-
-			The main interest in running a peer-to-peer architecture was based around the aspect of reducing load on the server. The concept in mind was to pick the most-capable player in the game to be the acting game-sever, perhaps cycling through the players as an anti-cheat measure. However, one of the caveats of having a peer-to-peer architecture is that none of the connected players may be capable of running a playable game-server. For this case, the actual dedicated server could be used as a last-resort game-server.
-
-		 	Throughout the source-code, in particular the game-server, we attempt to abstract away from Node and Web-Sockets such that we do not unnecessarily construct constraints to an architecture that may be changed. There also existed experimental functionality as to how the dedicated server would communicate amongst all connected players who was the acting game-server.
+		Some of the most prevalent issues faced were those indirectly related to the project. Specifically the issues that came about due to the discretional use of third-party libraries, and other technologies.
 
 		\subsection{Redux}
-			Redux a predictable state container for JavaScript applications which is used client-side to manage the view layer, among other tasks (see \fullref{redux}). However,
+			Redux played a pretty superb job in handling our state. It kept our client's view layer in touch with the current game state (see \fullref{redux}). It even played a critical role in many of the tasks which occurred behind the scenes - those which weren't directly related to our game-state. Despite its successful integration into our application, it was the spawn of many challenges.
 
-			Redux Saga \parencite{reduxSaga} is a JavaScript library that is a middleware for Redux. It attempts to make asynchronous actions, and their integration with Redux, far more straightforward. It heavily relies upon the use of JavaScript generators and is in principle based upon the saga pattern \parencite{sagas}.
+			For example, Redux is not natively equipped to deal with asynchronous events; such as communicating with the server, or detecting user keyboard input. Fortunately, there exist many additional libraries which tackle this problem. One of the asynchronous libraries is Redux Saga \parencite{reduxSaga}.
 
-			However, integrating Redux Saga with web-sockets proved to be quite complicated. The developed solution first immediately establishes a connection with the server and maintains said connection. A read saga is then set-up which constantly listens for messages from the server, and upon receiving one will split out a Redux action containing the payload. The client is able to send messages to the server simply by distributing an action containing the desired payload. This action is then intercepted by our write saga, who relays it off to the server.
+			Redux Sagae is a middleware that can be attached to Redux. It used into conjunction with the new JavaScript generators, to make dealing with asynchronous code in a React/Redux application easier and more natural to work with. The use of generators play as an alternative to callbacks, which can quickly grow to become out-of-hand. In principle, it builds upon the saga pattern \parencite{sagas}.
+
+			For most jobs, Redux Saga is quite simple to use. However, integrating Redux Saga with Web-Sockets proved to be quite complicated - especially with regards to the use of JavaScript generators.
+
+			Our implemented solution begins by first immediately requesting then establishing a Web-Socket connection with the server, and proceeds to maintain said connection. A saga is then set-up and tasked to constantly listen out for messages from the server, and upon receiving a message will spit out the appropriate Redux action containing the payload. A write saga is also set-up which listen for actions emitted to the store from the client. Once an action is received, it is appropriately packaged into a payload and shot off to the server using the maintained Web-Socket connection.
+
+			This Web-Socket/Redux Saga adapter works very well, and is wrote in a generic manner, decoupled from the rest of the application, in order for it be feasibly integrated into other projects.
 \end{document}

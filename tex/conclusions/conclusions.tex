@@ -1,6 +1,20 @@
 \documentclass{standalone}
 
 \begin{document}
-	\section{Conclusion}
-		Talk about the aforementioned aims and how they're dealt with in the system.
+		Blah, blah, blah...
+
+	\section{Networking}
+
+		\subsection{Scalability}
+			Since the conception of the project, the game has been designed according to the client/server network architecture model (see \fullref{sec:architectureOverview}). This has suited the project quite nicely, especially with the additional techniques used to reduce latency (see \fullref{sec:networkCommunication}).
+
+			A large amount of time was also invested in enabling the game to support an arbitrary number of game lobbies. The functionality does exist and works as one would expect. However, it simply does not scale very well. Despite many efforts, such as those related to concurrency (see \fullref{sec:networkPerformance}), a single dedicated game sever is only capable of feasibly running a few game instances, and is dramatically subject to the number of computer players that are controller by artificial intelligence.
+
+			Quite early on during development, this issue started to get recognised as a potential problem that may later arise. In fact, significant efforts were made to prepare for an adjustment regarding the network architecture. In particular, it was conceptualised that the dedicated server would pick the most-capable connected player in a lobby to play the role of the game-sever, perhaps cycling through the players as an anti-cheat measure.
+
+			This alternative strategy would dramatically reduce load on our dedicate server, as it would then only be responsible for establishing the connection between players in the same lobby.
+
+			Techniques, such as dependency injection, have been used throughout the game's networking functionality to ensure that there is absolute minimal coupling to Node.js, such that to reduce the amount of work required in transitioning the aforementioned strategy.
+
+			The main setback faced is that Web-Sockets is not capable of browser-to-browser communication. This leaves open two potential solutions: proxy messages through the dedicated server, or, more favourably, convert the communication medium to WebRTC.
 \end{document}
