@@ -76,23 +76,29 @@
 			The source code directly composing our application is split into three main directories: \emph{shared}, \emph{client}, and \emph{server}. The \emph{shared} directory contains the bulk of our application, including source which is rendered server-side to be served to a client. Whilst the \emph{client} directory is for browser specific source that is not to be used server-side, not even for the purpose of server-side rendering. In particular, it includes functionality such as user-input and establishing a live communication session with the server. In a similar respect, the \emph{server} direction contains all the source specific to our Node server.
 
 	\section{User Interface}
-		It should be declared, once again, that the primary focus of this project is not to create a polished video-game, but to simply explore the related techniques and their relation plus integration with the realm of modern web-development.
+		It should be declared, once again, that the primary focus of this project is not to create a polished video-game, but to simply explore the related techniques and their integration within the realm of modern web-development. However, in reality, if a video-game's user-interface is sub-par, the likelihood of the user having a positive experience will be highly diminished. It is for that reason, we shall discuss some core aspects related to user-interface design and it's correlation with this project.
 
-		However, in reality, the lack of both a functional and attractive user-interface can break a project; even one which would otherwise be superb. It is for that reason, this section has been included.
+		The user-interface is not solely related to the layout and style of graphical components, but also about how their behaviour can impact the user's experience. In particular, the way in which they're expected to interact an application can be a detrimental factor.
 
-		The user-interface isn't solely involve the layout and style of graphical components, but also about how their behaviour can affect the user's experience - especially when user interaction is a factor.
+		There is also no single solution to user-interface design. Every scenario is different, with its own unique specifications, and must be treated as such. However, there are general guidelines and conventions which are commonly found to be incorporated into designs. Therefore, we must develop a design that accommodates the uniques characteristics of Tron.
 
-		With this taken into account, along with inspiration from the researched alternative browser games and the unique characteristics of Tron, such as its short-lived game duration, the following set of interface design specifications have been devised:
+		With this taken into account, along with inspiration drawn from analysing the existing browser-games (see \fullref{sec:existingGames}), the following set of interface design specifications have been devised:
 
 		\begin{formal}
 			\begin{enumerate}
-				\item Single-page web-application, to reduce the loading times experienced by the user.
-				\item Simplistic URL structure, to improve manual navigation.
-				\item Simplistic and preferably quick method to invite other players, or friends (if applicable), to a game lobby.
-				\item Responsive page layout, such that the site remains usable and aesthetically pleasing on a range of devices and resolutions.
-				\item Keyboard input should be used in order to control the direction of the user's player.
+				\item \textbf{Single-page web-application}: the interface should be a single HTML page, which dynamically updates its content. This is to avoid irritating the user with page reloads differing by only small amounts of content.
+				\item \textbf{Responsive layout}: the interface should scale nicely on a variety of devices - accommodating different resolutions. This is done through the use of techniques such as CSS media queries and relative units.
+				\item \textbf{Conventional user input}: as the game is quite simple, the average user should almost instinctively know how to operate it. Primarily, this is done by sticking to convention; such as \emph{WASD} keys in order to move.
+				\item \textbf{Lobby invitation}: the interface should provide users with a very straightforward way in which they're able to play a game of Tron with their friends.
+				\item \textbf{Simplistic URL structure}: the interface must make intuitive use of the site's URL, as the game will be a web-application; so should conform to convention.
 			\end{enumerate}
 		\end{formal}
+
+		After carefully assessment of the above criteria, it became possible to develop some concepts and realise them prototype designs. Throughout the remainder of this section, we shall elaborate on these prototypes.
+
+		We conceived the idea to solve both the \enquote{Lobby invitation} and \enquote{Simplistic URL structure} criteria with a single solution. This solution is to allocate the entire URL path to represent a \emph{key} to a single particular Tron game lobby. That is, if a player wants to invite his friends to a game; they would simply append some arbitrary sequence of characters to their URL then forward it to their friends. This solution is very easy for the user to understand. Although, the \emph{privacy} of their game is dependent on the predictability of the chosen lobby key.
+
+		In Tron, it is pivotal for there to be minimal obstruction towards the user when they wish to apply their ability to redirect their player within the game arena. This rules out the use of any form of button, due to the unacceptable latency involved in positioning the cursor. Instead, the user shall control their player using the \emph{WASD} keys (that is \emph{W}: north, \emph{A}: west, \emph{S}: south, \emph{D}: east). Or, as an alternative for mobile touch devices, the user is required to simply tap the portion of the screen reflecting the direction they wish to now travel along.
 
 	\section{Game Mechanics}
 		Compared to other arcade games, Tron has relatively few fundamental game mechanics. However, with that being said, there are still many challenges that arise due to the game's fast-paced nature and critical requirement for accuracy. Throughout this section, we shall discuss some of the more integral problems regarding the game's core mechanics along with the designed solutions, and the techniques in which they use.
@@ -217,19 +223,27 @@
 
 		Thus, a greater score indicates a stronger position; although not relative to other players.
 
-		Even with the reduction in search-space and optimised evaluation function, time is still limited. So, we use Monte Carlo tree search \parencite{MonteCarloTreeSearch} with UCB1 to only explore promising branches of the game tree.
-
-		However, UCB1 takes into account \emph{wins} and \emph{loses}. Clearly, this conflicts with the idea of running simulations to some fixed depth. To combat this, when we reach the end of a simulation, we decide whether the said simulation was a \emph{win} or a \emph{loss} based upon some naive rules:
-		\begin{itemize}
-			\item If our player is dead, increment the losses by the total number of alive players.
-			\item Otherwise, increment wins by 1 (to reward being alive) plus 1 for each player that is either dead or have a lower heuristic score.
-		\end{itemize}
+		Even with the reduction in search-space and optimised evaluation function, time is still very limited. In order to avoid wasting such time, we disregard branches which are not promising. This is done through the use of the Monte Carlo tree search algorithm \parencite{MonteCarloTreeSearch} with UCB1.
 
 		\begin{figure}[!htbp]
 			\centering
 			\includegraphics[width=.8\textwidth]{resources/images/mcts.png}
 			\caption{Diagram depicting the Monte Carlo tree search algorithm, from \parencite{MonteCarloTreeSearchDiagram}.}
 		\end{figure}
+
+		\begin{figure}
+			\begin{formal}
+				Let $t$ be the total number of simulations that have involved node $s$, let $n_i$ be the total number of times the move to $s_i$ was chosen as the next move (i.e. $t = n_1 + \ldots + n_k$), and let $w_i$ be the number of times this led to a win. If the simulation ends up in node $s$, and $s$ is not a final state of the game, then as the next move, we choose the one that ends up in node $s_i$ such that the following score is maximised:
+				\[ UCB1 = \frac{w_i}{n_i} + \sqrt{\frac{2 \ln{t}}{n_i}} \]
+				\caption{A description of the UCB1 formula and its application with regards to a turn-based game-tree.}
+			\end{formal}
+		\end{figure}
+
+		However, UCB1 takes into account \emph{wins} and \emph{loses}. Clearly, this conflicts with the idea of running simulations to some fixed depth. To combat this, when we reach the end of a simulation, we decide whether the said simulation was a \emph{win} or a \emph{loss} based upon some naive rules:
+		\begin{itemize}
+			\item If our player is dead, increment the losses by the total number of alive players.
+			\item Otherwise, increment wins by 1 (to reward being alive) plus 1 for each player that is either dead or have a lower heuristic score.
+		\end{itemize}
 
 		On top of all of this, the simulations involved in calculating the artificial intelligence's move run in parallel to the rest of the game-server. This is done by spinning off a child process, which will run on a separate core. Once a move has been calculated, it will communicate the result back to the server and then die.
 
