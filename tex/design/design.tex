@@ -80,7 +80,7 @@
 
 		The user-interface is not solely related to the layout and style of graphical components, but also about how their behaviour can impact the user's experience. In particular, the way in which they're expected to interact an application can be a detrimental factor.
 
-		There is also no single solution to user-interface design. Every scenario is different, with its own unique specifications, and must be treated as such. However, there are general guidelines and conventions which are commonly found to be incorporated into designs. Therefore, we must develop a design that accommodates the uniques characteristics of Tron.
+		There is also no single solution to user-interface design. Every scenario is different, with its own unique specifications, and must be treated as such. However, there are general guidelines and conventions which are commonly found to be incorporated into designs. Therefore, we must develop a design that accommodates the unique characteristics of Tron.
 
 		With this taken into account, along with inspiration drawn from analysing the existing browser-games (see \fullref{sec:existingGames}), the following set of interface design specifications have been devised:
 
@@ -170,7 +170,7 @@
 						\centering
 						\captionsetup{width=.8\linewidth}
 	          \includegraphics[width=.8\linewidth]{resources/images/collision/side.png}%
-	          \captionof{figure}{Example of a sideways collision. On the left, two players are depicted in their unfixed positions. Whilst on the right, they're now shown in their relative position.}
+	          \captionof{figure}{An example diagram demonstrating a sideways collision between two players. On the left, they're depicted in their unfixed positions. Whilst on the right, they're now shown in their fixed positions.}
 	    		\end{minipage}
 				\item \label{itm:headCollision}
 					\textbf{Case}: head-on collision between two players.\\
@@ -179,7 +179,7 @@
 						\centering
 						\captionsetup{width=.8\linewidth}
 	          \includegraphics[width=.8\linewidth]{resources/images/collision/headon.png}%
-	          \captionof{figure}{Example of a head-on collision. On the left, two players are depicted in their unfixed positions. Whilst on the right, they're now shown in their relative position.}
+	          \captionof{figure}{An example diagram demonstrating a head-on collision between two players. On the left, they're depicted in their unfixed positions. Whilst on the right, they're now shown in their fixed positions.}
 	    		\end{minipage}
 			\end{enumerate}
 
@@ -248,7 +248,4 @@
 		On top of all of this, the simulations involved in calculating the artificial intelligence's move run in parallel to the rest of the game-server. This is done by spinning off a child process, which will run on a separate core. Once a move has been calculated, it will communicate the result back to the server and then die.
 
 		The server will then apply lag compensation, once it receives the communicated move. This effectively allows simulations to take longer than the duration of a single tick; leading to moves that are generally better.
-
-	\section{Source Code Overview}
-		TODO.
 \end{document}
