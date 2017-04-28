@@ -24,7 +24,7 @@
 				\input{packagescripts.tex}
 			\end{formal}
 
-	\section{General Design}
+	\section{Preliminary Design}
 		The application itself is quite a large undertaking, as it comprises a multitude of different aspects. Most of which can be categorised into one of three groups: game mechanics, network communications, and artificial intelligence. Therefore, where possible, we shall try to discuss each one of these categories separately. But first of all, we shall introduce the reader with an overview of the application and describe the relation between some of its core components.
 
 		\subsection{Architecture Overview} \label{sec:architectureOverview}
@@ -74,6 +74,25 @@
 			Regarding the Redux store, the state is simply injected directly into the web-document prior to being served to a client. Upon initialisation, the client immediately rehydrates the application using the transmitted state and mounts the React components.
 
 			The source code directly composing our application is split into three main directories: \emph{shared}, \emph{client}, and \emph{server}. The \emph{shared} directory contains the bulk of our application, including source which is rendered server-side to be served to a client. Whilst the \emph{client} directory is for browser specific source that is not to be used server-side, not even for the purpose of server-side rendering. In particular, it includes functionality such as user-input and establishing a live communication session with the server. In a similar respect, the \emph{server} direction contains all the source specific to our Node server.
+
+	\section{User Interface}
+		It should be declared, once again, that the primary focus of this project is not to create a polished video-game, but to simply explore the related techniques and their relation plus integration with the realm of modern web-development.
+
+		However, in reality, the lack of both a functional and attractive user-interface can break a project; even one which would otherwise be superb. It is for that reason, this section has been included.
+
+		The user-interface isn't solely involve the layout and style of graphical components, but also about how their behaviour can affect the user's experience - especially when user interaction is a factor.
+
+		With this taken into account, along with inspiration from the researched alternative browser games and the unique characteristics of Tron, such as its short-lived game duration, the following set of interface design specifications have been devised:
+
+		\begin{formal}
+			\begin{enumerate}
+				\item Single-page web-application, to reduce the loading times experienced by the user.
+				\item Simplistic URL structure, to improve manual navigation.
+				\item Simplistic and preferably quick method to invite other players, or friends (if applicable), to a game lobby.
+				\item Responsive page layout, such that the site remains usable and aesthetically pleasing on a range of devices and resolutions.
+				\item Keyboard input should be used in order to control the direction of the user's player.
+			\end{enumerate}
+		\end{formal}
 
 	\section{Game Mechanics}
 		Compared to other arcade games, Tron has relatively few fundamental game mechanics. However, with that being said, there are still many challenges that arise due to the game's fast-paced nature and critical requirement for accuracy. Throughout this section, we shall discuss some of the more integral problems regarding the game's core mechanics along with the designed solutions, and the techniques in which they use.
@@ -159,7 +178,6 @@
 			\end{enumerate}
 
 	\section{Network Communication} \label{sec:networkCommunication}
-		\label{gameLobby}
 		For a game to be multiplayer, all players need to share the same consistent experience across a network, i.e. they need to all be playing on the same game state. So this raises the question on how to synchronise the game state between all connected players. There are two main methods to achieve a synchronised game state and, to some degree, we will be using ideas from both.
 
 		The first method is known as \emph{peer-to-peer lockstep}. It centres around the idea of the game being modelled as turn-based and, before each turn, all non-deterministic events (such as user-input) are broadcasted to all players. Once all players have sent their input for this turn, each player then individually updates their game state; which will of course all end up being identical. The primary flaw in this technique is that all players are forced to play at the latency of the player with the weakest connection. This would be extremely frustrating for Tron, as each time you try to move you have to wait for the player with the weakest connection.
@@ -179,6 +197,10 @@
 
 		\label{designCommunicationTechnologies}
 		As introduced within the background section (see \fullref{sec:browserTechnologies}) there exist several technologies capable of handling the actual communication with a web-server; most notably Web-Sockets and Web-RTC. However, we have chosen to use Web-Sockets as our chosen communicated technology. This is because it is well supported, well documented and is does not provide us with extra hassle as we already have a dedicated game-server.
+
+		\subsection{Game Lobbies and Concurrency} \label{sec:lobbyConcurrency}
+			TODO.
+
 
 	\section{Artificial Intelligence} \label{sec:design-ai}
 		In order for our computer opponent to play the game, they need to be controlled by some artificial intelligence; some program which has an understanding of the game and can make sensible moves, as if it were a human player. This is quite a complicated, especially given that our game is played in real-time.
@@ -212,4 +234,7 @@
 		On top of all of this, the simulations involved in calculating the artificial intelligence's move run in parallel to the rest of the game-server. This is done by spinning off a child process, which will run on a separate core. Once a move has been calculated, it will communicate the result back to the server and then die.
 
 		The server will then apply lag compensation, once it receives the communicated move. This effectively allows simulations to take longer than the duration of a single tick; leading to moves that are generally better.
+
+	\section{Source Code Overview}
+		TODO.
 \end{document}

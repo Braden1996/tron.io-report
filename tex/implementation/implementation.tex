@@ -46,6 +46,21 @@
 
 		This inspired the idea to migrate to using the Monte Carlo Tree Search algorithm, as discussed in \fullref{sec:design-ai}. This allowed our AI to only explore branches of the game-tree that seemed promising; ignoring those branches that almost always led to poor outcomes.
 
+	\section{AI Concurrency}
+		In the early iterations of the game's artificial intelligence, the move for a computer controller player would prepare to calculate their next move of a tick; limiting the duration of the entire simulation process to at the most \textless 16 milliseconds. However, it soon became very apparent that this was an inadequate amount of time.
+
+		This provoked research into the possibility of running our artificial intelligence in a concurrently with the rest of the game, allowing simulation to take any pre-defined amount of time. Irritatingly, as developing the artificial intelligence was the final stage of the game's development, I then discovered that Node.js is strictly a single-threaded environment. This was an absolutely devastating discovery...
+
+		Thankfully, after an extortionate amount of research, Node's \texttt{child\_process} module \parencite{nodeChildProcess} was discovered and successfully integrated into our game sever - after much hassle regarding getting it to build correct with our React Universally workflow.
+
+		In short, this Node module allows us to create a fork of an entirely new, and separate Node process which can communicate with our main process. Not only did this allow us to execute our artificial intelligence's simulations without blocking our game loop, but it also reduced the time in which we kept our Node event-loop occupied. It is critical for our Node event-loop to not be used for computationally demanding tasks, as they prevent our server from processing time-sensitive requests such as processing actual user-input or even serving up the application's static files.
+
+		Despite this, it still seemed as though our artificial intelligence was preventing out event-loop from spinning fast enough. After extensive debugging, it was determined that the cause for this delay was due to the fact lag compensation was being applied after we had received the suggested move from our artificial intelligence. This greatly hindered the game's experience, as it made game-play sluggish and inaccurate; obviously this type of behaviour was unacceptable.
+
+		This spawned a large-scale redesign regarding how the game lobby class dealt with the game state. Previously, the lobby, and therefore the main thread, would not only be responsible for running our tick updates to the state, but also for applying the sequence of updates required during lag compensation. However, the greater amount of time we have to compensate for equals a greater amount of time it takes to perform the compensation. This caused our Node event-loop to get severely, and frequently held-up.
+
+		The problem was solved thanks to the development of our \texttt{StateController} class. Each game lobby instance would, within its constructor, instantiate a new instance of this \texttt{StateController} class. Within this \texttt{StateController} instance would live a separate process that was solely dedicated to applying individual updates to the game state. For a more in-depth description, see \fullref{sec:lobbyConcurrency}.
+
 	\section{Technology Integration}
 		Some of the most prevalent issues faced were those indirectly related to the project. Specifically the issues that came about due to the discretional use of third-party libraries, and other technologies.
 
