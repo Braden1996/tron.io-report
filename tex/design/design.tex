@@ -32,7 +32,7 @@
 
 			At its heart, the game follow a client-server multiplayer game architecture. This is where a single device is designated to be responsible for processing user-input, updating the game state and communicating said game state to the connected players. The connected players are principally responsible for relaying input to the server and rendering graphics based upon the state communicated from the server.
 
-		\subsection{Core Technologies}
+		\subsection{Core Technologies} \label{sec:coreTechnologies}
 			As the game is to be played in a web-browser, we will be making use of the three fundamental web languages; HTML, CSS, and JavaScript. These three languages, and the standards which govern them, allow us to confidently write portable code which will run predictably within the majority of web-browsers. Although, sadly this is not always the case as it is notorious for many web-browsers to not always fully support the most up-to-date standard - assuming it follows it in the first place.
 
 			The primary programming language for our client-side source-code is JavaScript; the standard core web-browser technology for DOM manipulation of a web-page. To help tackle the compatibility issue mentioned above, the all our JavaScript will conform according to the ECMAScript2015 standard \parencite{ECMAScript2015}. It shall then be transpiled to a more universally supported syntax using Babel \parencite{Babel}.
@@ -75,7 +75,7 @@
 
 			The source code directly composing our application is split into three main directories: \emph{shared}, \emph{client}, and \emph{server}. The \emph{shared} directory contains the bulk of our application, including source which is rendered server-side to be served to a client. Whilst the \emph{client} directory is for browser specific source that is not to be used server-side, not even for the purpose of server-side rendering. In particular, it includes functionality such as user-input and establishing a live communication session with the server. In a similar respect, the \emph{server} direction contains all the source specific to our Node server.
 
-	\section{User Interface}
+	\section{User Interface} \label{sec:userInterface}
 		It should be declared, once again, that the primary focus of this project is not to create a polished video-game, but to simply explore the related techniques and their integration within the realm of modern web-development. However, in reality, if a video-game's user-interface is sub-par, the likelihood of the user having a positive experience will be highly diminished. It is for that reason, we shall discuss some core aspects related to user-interface design and it's correlation with this project.
 
 		The user-interface is not solely related to the layout and style of graphical components, but also about how their behaviour can impact the user's experience. In particular, the way in which they're expected to interact an application can be a detrimental factor.
@@ -205,8 +205,23 @@
 		As introduced within the background section (see \fullref{sec:browserTechnologies}) there exist several technologies capable of handling the actual communication with a web-server; most notably Web-Sockets and Web-RTC. However, we have chosen to use Web-Sockets as our chosen communicated technology. This is because it is well supported, well documented and is does not provide us with extra hassle as we already have a dedicated game-server.
 
 		\subsection{Game Lobbies and Concurrency} \label{sec:lobbyConcurrency}
-			TODO.
+			Our web-application is intended to support the simultaneous play of numerous Tron game lobbies. This is to allow separate groups of users to each be allocated their own game instance, allowing them to play with one-another - away from undesired guests.
 
+			When a user visits our web-application's site, the server will receive a \emph{HTTP GET} request and serve them the necessary files. Once the client receives said files, they begin to render and mount the React view.
+
+			As a reminder, the URL path is interpreted as the unique game lobby key (see \fullref{sec:userInterface}). Hence, once the view has been mounted, if the client's URL path is not blank a WebSocket's connection is then established with the server. The client will then request to the server that they wish to join said lobby.
+
+			Once the server receives a request from a client, who wishes to join a game lobby, it will check if the lobby corresponding to the submitted key currently exists. If not, it is created. The server will then add the requesting client as a player in said lobby.
+
+			Once registered with the game lobby, the client is added as a player within the current game state and then is sent a full copy of said state. This update to the game state is distributed to the other existing lobby clients identically to any other update (i.e. via our snapshot system, see \fullref{sec:networkCommunication}).
+
+			The game lobby contains a special object called the state controller. This object keeps a history of all the states currently held within our lag compensation's history. It is also responsible for spinning our game lobby's game loop and handling all updates to the game state.
+
+			However, Node.js is a single-threaded environment, which means that only one request can be processed at any given time. This requires all forms of I/O, and other computationally expensive tasks, to be performed asynchronously; to avoid creating a lock on Node's event-loop.
+
+			Knowing this does create concern, as our game will include tasks that are very computationally expensive - such as the aforementioned state updates, along with others including artificial intelligence. However, Node.js is equipped with a module, called \texttt{child\_process} \parencite{nodeChildProcess}. This module is of vital importance, as it enables us to delegate the computationally expensive tasks onto a separate process that shall be executed in in parallel - without blocking our main Node.js event loop.
+
+			Therefore, our state controller will delegate all state updates to a dedicated Node.js child process; keeping the event-loop of our main Node.js process spinning fast.
 
 	\section{Artificial Intelligence} \label{sec:design-ai}
 		In order for our computer opponent to play the game, they need to be controlled by some artificial intelligence; some program which has an understanding of the game and can make sensible moves, as if it were a human player. This is quite a complicated, especially given that our game is played in real-time.

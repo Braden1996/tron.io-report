@@ -73,11 +73,20 @@
 
 				For example, Redux is not natively equipped to deal with asynchronous events; such as communicating with the server, or detecting user keyboard input. Fortunately, there exist many additional libraries which tackle this problem. One of the asynchronous libraries is Redux Saga \parencite{reduxSaga}.
 
-				Redux Sagae is a middleware that can be attached to Redux. It used into conjunction with the new JavaScript generators, to make dealing with asynchronous code in a React/Redux application easier and more natural to work with. The use of generators play as an alternative to callbacks, which can quickly grow to become out-of-hand. In principle, it builds upon the saga pattern \parencite{sagas}.
+				Redux Saga is a middleware that can be attached to Redux. It used into conjunction with the new JavaScript generators, to make dealing with asynchronous code in a React/Redux application easier and more natural to work with. The use of generators play as an alternative to callbacks, which can quickly grow to become out-of-hand. In principle, it builds upon the saga pattern \parencite{sagas}.
 
 				For most jobs, Redux Saga is quite simple to use. However, integrating Redux Saga with Web-Sockets proved to be quite complicated - especially with regards to the use of JavaScript generators.
 
 				Our implemented solution begins by first immediately requesting then establishing a Web-Socket connection with the server, and proceeds to maintain said connection. A saga is then set-up and tasked to constantly listen out for messages from the server, and upon receiving a message will spit out the appropriate Redux action containing the payload. A write saga is also set-up which listen for actions emitted to the store from the client. Once an action is received, it is appropriately packaged into a payload and shot off to the server using the maintained Web-Socket connection.
 
 				This Web-Socket/Redux Saga adapter works very well, and is wrote in a generic manner, decoupled from the rest of the application, in order for it be feasibly integrated into other projects.
+
+			\subsubsection{Node.js Child Process}
+				Both the networking aspects and artificial intelligence aspects of our application rely heavily on the use of Node.js's child process module. This allows us to delegate computationally expensive tasks to be computed concurrently within a separate process. However, as threading is not supported, we are unable to share memory between any two processes. As an alternative, we were able to serialise our game state and communicate that to our separate process. This was cause of serious issue. 
+
+				During development our application was experiencing some odd unexpected behaviour - input seemed sluggish at times. During some rigorous benchmarking, it was discovered that the time required to serialise, and communicate our game state to a separate process was dangerously greater than the time spent on the task inside the process. In fact, it would often take longer than several ticks to apply a single update to the game state.
+
+				After extensive debugging, a pattern emerged in that as the duration of a single game of Tron grew, the delay of communication with a separate process also grew. After some more analysis, communicating the game state's cache was identified as being the primary cause of this extra delay.
+
+				Although not a perfect, our application now prevents the communication of game state cache when communicating with a separate process. On the receiving side of communication, the cache is efficiently rebuilt using data from the remainder of the game state. This solution produced wonderful results.
 \end{document}
