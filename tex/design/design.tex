@@ -59,9 +59,9 @@
 
 			Given that we already have to use JavaScript for our front-end game code, it makes sense to not bring in another language for our back-end. This bears a myriad of benefits, such as not having to deal with the additional quirks of a separate programming language. Also, it eliminates the hassle of maintaining two separate implementations of code that is identical in purpose. This becomes especially relevant later on, when we introduce client-side prediction (see \fullref{clientPrediction}). Hence for the back-end, that is the code which will be executed on a dedicated server, we shall be utilising Node.js\parencite{NodeJs}.
 
-			Node.js, is a technology which serves as a JavaScript runtime environment allowing JavaScript to run in standalone, outside of a web-browser. It has become a major proponent of the \enquote{JavaScript everywhere} paradigm, allowing the meat of web-application development to unify around a single programming language. A concise description is provided on the front-page of its website:
+			Node.js, is a technology which serves as a JavaScript run-time environment allowing JavaScript to run in standalone, outside of a web-browser. It has become a major proponent of the \enquote{JavaScript everywhere} paradigm, allowing the meat of web-application development to unify around a single programming language. A concise description is provided on the front-page of its website:
 			\begin{formal}
-				\enquote{Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.} - \cite{NodeJs}
+				\enquote{Node.js® is a JavaScript run-time built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.} - \cite{NodeJs}
 			\end{formal}
 
 		\subsection{Boilerplate} \label{sec:boilerplate}
@@ -124,7 +124,7 @@
 	      	\end{description}
 	        \item[cache]: a nested object containing various cache structures required by our state. The following describes the structure of the cache object:
 	        \begin{description}
-	        	\item[collisionStruct]: a data-structure in which we can check for player/trail collisions within our arena. See for more detail \fullref{collisionDetection}.
+	        	\item[collisionStruct]: a data-structure in which we can check for player/trail collisions within our arena. See for more detail \fullref{sec:collisionDetection}.
 	      	\end{description}
 	    \end{description}
     \end{formal}
@@ -143,7 +143,7 @@
 
 		By default, both client and server will have their game loop configured to run at a tick-rate of once every 15 milliseconds - approximately 66 times a second. \footnote{This is considered the standard for video-games. In most cases, a faster rate does not provide any distinguishable benefit.}
 
-		\subsection{Collision Detection} \label{collisionDetection}
+		\subsection{Collision Detection} \label{sec:collisionDetection}
 			Many existing Tron implementations internally use a grid-based arena, that is a play occupies an entire whole cell of the arena. This enables collision look-ups to be performed in constant time, by simply indexing an array. However, our implementation allows players to move with an incredibly high-degree of precision\parencite{JsNumbers}. Unfortunately, this does complicate collision lookups.
 
 			Instead of checking for collisions against every object in the arena, we have utilised the uniform grid spatial data-structure. This allows us to divide the arena into a grid of arrays, where each array holds references to the objects that reside within its bounded space. Thus, when checking for a collision, we only need to check against objects that are held within the array(s) that our target object intersects with; reducing the search space quite substantially.
