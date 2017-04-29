@@ -5,7 +5,7 @@
 \begin{document}
 	Throughout the following chapter, we shall analyse the intricate specifications of our application and accordingly propose sensible design solutions. This will consist of describing the application as a whole, then delving into each of the individual aspects. By the end, the reader should obtain a strong understanding of what exactly our application does along with the utilised core techniques.
 
-	\section{Software Development Process}
+	\section{Software Development Process} \label{sec:softwareDevelopmentProcess}
 		Firstly, we shall describe the overall methodology and workflow that have been employed throughout the duration of development. These are of important consideration as they promote both an effective and productive approach to the creation of software. Much of what is to be described is inspired by the ideas expressed in \parencite{pragmaticProgrammer}.
 
 		As the application is not a collaborative undertaking, there is little-to-no need in sticking strictly to any specific paradigm or framework for the software development process; as it would most probably lead to unnecessary overhead and distraction from any relevant progress. However, it is still of purpose to state that development most closely resembles the set of principles described under Agile \parencite{beck2001agile}, in that the application's design and implementation occurred concurrently, with continuous adaptation.
@@ -19,7 +19,7 @@
 		\subsection{Package Scripts}
 			We have also assembled a repertoire of scripts that serve the purpose of automating some of the tedious tasks which are executed on a regular basis. In abstracting away from these laborious procedures, we have reduced the chance of unnecessary complications whilst also improving the efficiency of working with the application.
 
-			Below is a curated list of the available scripts, along with a short description of their purpose.\footnote{Also, when a developer attempts to push to the GitHub repository, our unit-test are automatically performed; aborting the push upon failure.} However, please mind that some reflect ideas we have yet to discuss. (for more detail, please see \fullref{sec:reactUniversally})
+			Below is a curated list of the available scripts, along with a short description of their purpose.\footnote{Also, when a developer attempts to push to the GitHub repository, our unit-test are automatically performed; aborting the push upon failure.} However, please mind that some reflect ideas we have yet to discuss. (for more detail, please see \fullref{sec:boilerplate})
 			\begin{formal}
 				\input{packagescripts.tex}
 			\end{formal}
@@ -49,7 +49,6 @@
 				\caption{Diagram depicting the Model–view–controller software architectural pattern, from \parencite{MVC}.}
 			\end{figure}
 
-			\label{redux}
 			Thankfully, this is a very common problem faced during web-development, and there already exist many capable candidate solutions. With this in mind, along with the desire to learn a new framework, and the curiosity regarding its applicability in integration with this project; React\parencite{React} and Redux\parencite{Redux} have been employed to help manage the view layer.
 
 			React is a popular JavaScript framework that makes it relatively easy to create advance user-interfaces for web-applications. It allows you to design your application as a set of simple views for each state in your application, and will efficiently update and render only the appropriate components when data changes. In essence, this is done by constructing almost your entire application's view layer within JavaScript by building encapsulated components - each charged with managing their own state.
@@ -65,8 +64,7 @@
 				\enquote{Node.js® is a JavaScript runtime built on Chrome's V8 JavaScript engine. Node.js uses an event-driven, non-blocking I/O model that makes it lightweight and efficient.} - \cite{NodeJs}
 			\end{formal}
 
-		\subsection{Boilerplate}
-			\label{sec:reactUniversally}
+		\subsection{Boilerplate} \label{sec:boilerplate}
 			Somewhere early on during development, having already settled on the aforementioned technologies, it began more and more difficult to maintain an efficient development workflow. That inspired the decision to transition the project to the use of the React Universally \parencite{ReactUniversally} starter-kit; a boilerplate project with a bare-bones base structure along with various scripts to help automate the tedious build/watch transpile process required for our JavaScript code.
 
 			React Universally also sets up Server-side rendering with React. This is helpful as it enables the server to perform an initial render of our application's components, then serve the result to the client. This results in the web-page appearing to load faster, as the main layout would've been pre-rendered; so the client user does not experience the initial flickering of DOM elements as the view is mounted.
@@ -139,7 +137,7 @@
 
 		This solution may currently appear rather strange, as at this stage it is too early to introduce the entire reasoning reasoning. However, simply put, it allows us to keep an authoritative state (what is known) and a predictive state (what should be). Our DOM will reflect the authoritative state, whilst the drawn graphics of the game will reflect the predictive state (for more information, see \fullref{sec:lagCompensation}).
 
-		The next major aspect of our game is the game loop. In principle, it is a section of code that runs continuously during game-play, at some interval. User input is processed, without blocking, during each \emph{tick} of the loop. The remainder of the \emph{tick} is then used to update the game's state and render graphics. It of critical importance, and is arguably the most employed pattern in game-design as it provides a very convenient and deterministic way in which the developer can structure their game.
+		The next major aspect of our game is the game loop. In principle, it is a section of code that runs continuously during game-play, at some interval. User-input is processed, without blocking, during each \emph{tick} of the loop. The remainder of the \emph{tick} is then used to update the game's state and render graphics. It of critical importance, and is arguably the most employed pattern in game-design as it provides a very convenient and deterministic way in which the developer can structure their game.
 
 		Our game shall be utilising the game loop, and is heavily based around said pattern. In principle, the server needs to spin the game loop at a rate fast enough to process user-input and calculate updates without introducing noticeable latency. Whilst the client is only required to spin fast enough to create the illusion of animated graphics.
 
@@ -217,11 +215,11 @@
 
 			The game lobby contains a special object called the state controller. This object keeps a history of all the states currently held within our lag compensation's history. It is also responsible for spinning our game lobby's game loop and handling all updates to the game state.
 
-			However, Node.js is a single-threaded environment, which means that only one request can be processed at any given time. This requires all forms of I/O, and other computationally expensive tasks, to be performed asynchronously; to avoid creating a lock on Node's event-loop.
+			However, Node.js is a single-threaded environment, which means that only one request can be processed at any given time. This requires all forms of I/O, and other computationally expensive tasks, to be performed asynchronously; to avoid creating a lock on Node's event loop.
 
 			Knowing this does create concern, as our game will include tasks that are very computationally expensive - such as the aforementioned state updates, along with others including artificial intelligence. However, Node.js is equipped with a module, called \texttt{child\_process} \parencite{nodeChildProcess}. This module is of vital importance, as it enables us to delegate the computationally expensive tasks onto a separate process that shall be executed in in parallel - without blocking our main Node.js event loop.
 
-			Therefore, our state controller will delegate all state updates to a dedicated Node.js child process; keeping the event-loop of our main Node.js process spinning fast.
+			Therefore, our state controller will delegate all state updates to a dedicated Node.js child process; keeping the event loop of our main Node.js process spinning fast.
 
 	\section{Artificial Intelligence} \label{sec:design-ai}
 		In order for our computer opponent to play the game, they need to be controlled by some artificial intelligence; some program which has an understanding of the game and can make sensible moves, as if it were a human player. This is quite a complicated, especially given that our game is played in real-time.

@@ -1,13 +1,265 @@
 \documentclass{standalone}
 
+\usepackage{enumitem}
+\setlistdepth{20}
+\renewlist{description}{description}{20}
+
 \begin{document}
 	Both the design and implementation processes occurred simultaneously, that is the implementation of our application evolved alongside the development of its final design. During the design chapter \fullref{chap:design}, we only discussed the final state of the system - to avoid creating confusion on what was actually created. However, throughout this chapter, we shall discuss some of the difficulties which were faced, as well as the mistakes that were made and the solutions which we arrived at.
 
 	\section{Source Overview}
-		TODO.
+		Great effort has been invested into ensuring that our implemented source-code is of a high-quality. Among other aspects, this entails conscious attention to certain factors, such as maintainability and reusability. This is especially important due to the multifaceted nature of the project.
+
+		In particular, certain software development principles have been utilised, such as high-cohesion and low-coupling. This results with in an implementation that is both easier to understand, and whose components can be easily integrated into future projects.
+
+		Throughout the remainder of this section, we shall provide the reader with an overview of our application's source-code. This is to help establish an understanding of what exactly has been developed, and how the implementation is structured. However, for an in-depth description regarding specific detail of our code, we advise the reader to further their understanding by consulting said source-code directly. In order to ease this, high amounts of documentation have been embedded throughout the codebase.\footnote{We've omitted all unit-tests to try and keep this list concise.} \footnote{In order to retain focus on our project's primary aspects, we avoid delving too far into React Universally (see \fullref{sec:boilerplate}).}
+
+		\begin{formal}
+			\begin{description}
+					\item[./]: the root directory of our project, besides more interesting directories, this mostly contains configurable files for some of the utilised technologies.
+					\begin{description}
+	        	\item[./.babelrc]: configuration file for Babel (see \fullref{sec:coreTechnologies}).
+
+	        	\item[./.editorconfig]: configuration file for EditorConfig, which helps developers define and maintain consistent coding styles between different editors and IDEs.
+
+	        	\item[./.env\_example]: example configuration file describing environment variables intended for use during deployment. This is provided by React Universally.
+
+	        	\item[./.eslintignore]: configuration file containing patterns identifying specific files that we intentionally do not wish to lint. This include third-party and post-build source-code.
+
+	        	\item[./.eslintrc]: configuration file for our JavaScript linter (see \fullref{sec:softwareDevelopmentProcess}).
+
+	        	\item[./.modernizrrc]: configuration file for Modernizr - which enables us to detect the browser technologies supported for each client. This is provided by React Universally.
+
+	        	\item[./.nvmrc]: configuration file stating this application's intended version of Node.js.
+
+	        	\item[./LICENSE]: copy of the application's licence, that is \emph{GNU GENERAL PUBLIC LICENSE Version 3}.
+
+	        	\item[./package.json]: configuration file for Node.js which describes much of our application, such as dependencies and scripts. Extended from what is provided by React Universally.
+
+	        	\item[./README.md]: short piece of text introducing developers to the application.
+
+	        	\item[./TODO.todo]: todo-list containing a log of tasks which were completed throughout development (see \fullref{sec:softwareDevelopmentProcess}). This became somewhat disregarded towards the later stages.
+
+	        	\item[./yarn.lock]: log of the exact dependency versions, for predictable portability. This is provided by React Universally.
+	      	\end{description}
+
+	        \item[build/]: output directory containing our source-code once it has been transpiled and passed through a module bundler. We refrain from discussing its contents in further detail.
+
+	      	\item[client/]: directory containing browser specific source that serves no purpose server-side, not even for the purpose of server-side rendering.
+	        \begin{description}
+	        	\item[index.js]: kickstarts our application within the client's browser. Extended from what is provided by React Universally.
+	        	\item[registerServiceWorker.js]: installs the offline plugin, which instantiates our service worker and app cache to support precaching of assets and offline support. This is provided by React Universally.
+
+		        \item[components/]: directory containing the React components which are not required for server-side rendering.
+		      	\begin{description}
+	        		\item[ReactHotLoader.js]: enables React hot-loading for development builds of our application. This is provided by React Universally.
+        		\end{description}
+
+		        \item[game/]: directory containing all the Tron game functionality that is strictly only required client-side.
+		      	\begin{description}
+		        	\item[draw.js]: draw functionality that attaches to the canvas element of our document, enabling it to draw the graphics for our game of Tron.
+		        	\item[drawdebug.js]: optionally draw functionality that overlays the standard Tron graphics to provide the user with a visualisation that is more useful for debugging. In particular, the bounds for each node within our collision data-structure.
+		        	\item[gameloop.js]: a version of the game loop optimisation for the web-browser (for more information, see \fullref{sec:gameloopChallenges}).
+
+		        	\item[polyfills/]: directory containing polyfills that offer workarounds for clients whose browsers lack certain functionality. This is provided by React Universally.
+		      		\begin{description}
+		        		\item[polyfills/index.js]: example polyfill for clients that lack the picture element.
+	        		\end{description}
+
+		        	\item[state/]: directory containing Redux functionality which deals with the state of our application (see \fullref{sec:coreTechnologies}).
+		      		\begin{description}
+			        	\item[index.js]: entry point file which sets up our root Redux reducer and root Redux Saga (see \fullref{sec:reduxIntegration}).
+
+			        	\item[input/]: directory containing Redux functionality for processing user-input.
+		      			\begin{description}
+				        	\item[host/]: directory containing the Redux functionality which is usable by the user who is the host player within the current game lobby.
+		      				\begin{description}
+				        		\item[sagas.js]: Redux sagas used to execute actions on behalf of the game host for the current game lobby.
+		      				\end{description}
+
+				        	\item[keyboard/]: directory containing the functionality required for Redux to emit actions on keyboard input.
+		      				\begin{description}
+				        		\item[actions.js]: Redux actions for the key-down and key-up keyboard user-input events.
+				        		\item[sagas.js]: Redux Saga which forks out to constantly listen for keyboard input from the user; distributing actions for the appropriate events.
+		      				\end{description}
+
+		      				\item[player/]: directory containing the Redux functionality which is usable by the user in order to control their player.
+		      				\begin{description}
+				        		\item[sagas.js]: Redux sagas used to execute actions on behalf of the user, so that they're able to control their game player.
+		      				\end{description}
+		      			\end{description}
+
+			        	\item[lobby/]: directory containing Redux functionality enabling a user to communicate with a game lobby.
+		      			\begin{description}
+			        		\item[sagas]: Redux sagas used to send/receive messages between client and the server holding the game lobby.
+		      			\end{description}
+
+			        	\item[sockets/]: directory containing the means allowing Redux to communicate, in a natural manner, with a server via WebSockets (see \fullref{sec:reduxIntegration}).
+		      			\begin{description}
+			        	\item[actions]: Redux actions used to establish and communicate using a WebSockets connection.
+			        	\item[reducers]: Redux Reducer which attaches the WebSocket connection status to our Redux store's state.
+			        	\item[sagas]: Redux sagas which facilitate our WebSocket integration with Redux. 
+		      			\end{description}
+		      		\end{description}
+	      		\end{description}
+	      	\end{description}
+
+	        \item[config]: directory containing general configuration for our web-application and the build/deploy process. This is provided by React Universally.
+
+	        \item[internal]: directory containing much of the internals which compose React Universally.
+
+	      	\item[node\_modules]: directory containing many of the third-party dependencies, as specified within our \texttt{package.json} file.
+
+	      	\item[public]: directory containing miscellaneous static files useful for hosting a web-application. This is provided by React Universally.
+
+	      	\item[server]: directory containing functionality specific to our Node.js server.
+		        \begin{description}
+		        	\item[index.js]:
+		        	\item[sockets.js]:
+
+		        	\item[game/]
+		        	\begin{description}
+			        	\item[gameloop.js]:
+
+			        	\item[processes/]:
+		        		\begin{description}
+				        	\item[aimove.js]:
+				        	\item[update.js]:
+				      	\end{description}
+			      	\end{description}
+
+		        	\item[middleware/]:
+		      	\end{description}
+
+	      	\item[shared]:
+        		\begin{description}
+		        	\item[components]:
+		        	\begin{description}
+		        		\item[App]:
+				      	\begin{description}
+		        			\item[index.js]:
+		        			\item[globals.css]:
+
+		        			\item[Error404]:
+
+		        			\item[GameCanvas/]:
+					      	\begin{description}
+		        				\item[index.js]:
+							    \end{description}
+
+		        			\item[Lobby]:
+					      	\begin{description}
+		        				\item[index.jsx]:
+
+		        				\item[host/]:
+		        				\begin{verbatim}
+			        					\item[index.js]:
+			    					\end{verbatim}
+							    \end{description}
+
+		        			\item[Welcome]:
+					      	\begin{description}
+		        				\item[index.jsx]:
+							    \end{description}
+						    \end{description}
+
+						    \item[HTML/]:
+				    	\end{description}
+
+					    \item[game]:
+			      	\begin{description}
+			      		\item[gameloop.js]:
+
+			      		\item[ai/]:
+				      	\begin{description}
+				      		\item[index.js]:
+				      		\item[minimax.js]:
+				      		\item[montecarlo.js]:
+				      		\item[wintree.js]:
+
+				      		\item[heuristics/]:
+					      	\begin{description}
+				      			\item[index.js]:
+				      			\item[floodfill.js]:
+					      	\end{description}
+						    \end{description}
+
+						    \item[network/]:
+				      	\begin{description}
+			      			\item[lobby.js]:
+			      			\item[server.js]:
+			      			\item[snapshot.js]:
+			      			\item[statecontroller.js]:
+
+			      			\item[input/]:
+					      	\begin{description}
+				      			\item[index.js]:
+				      			\item[host.js]:
+				      			\item[player.js]:
+				      		\end{description}
+			      		\end{description}
+
+			      		\item[operations/]:
+				      	\begin{description}
+			      			\item[collision.js]:
+			      			\item[general.js]:
+			      			\item[player.js]:
+			      		\end{description}
+
+			      		\item[update/]:
+				      	\begin{description}
+			      			\item[index.js]:
+			      			\item[collision.js]:
+			      			\item[move.js]:
+			      		\end{description}
+
+			      		\item[utils/]:
+				      	\begin{description}
+			      			\item[geometry.js]:
+			      			\item[spawn.js]:
+
+			      			\item[collision/]:
+				      		\begin{description}
+				      			\item[grid.js]:
+				      			\item[object.js]:
+				      			\item[quadtree.js]:
+				    			\end{description}
+			      		\end{description}
+					    \end{description}
+
+					    \item[state]:
+					    	\begin{description}
+			      			\item[index.js]:
+			      			\item[configureStore.js]:
+
+
+			      			\item[input/]:
+					    		\begin{description}
+				      			\item[host/]:
+						    		\begin{description}
+				      				\item[actions.js]:
+			    					\end{description}
+
+				      			\item[player/]:
+						    		\begin{description}
+				      				\item[actions.js]:
+			    					\end{description}
+			    				\end{description}
+
+			    				\item[lobby/]:
+					    		\begin{description}
+				      			\item[actions.js]:
+				      			\item[reducers.js]:
+			    				\end{description}
+			    			\end{description}
+
+					    \item[utils]:
+		      	\end{description}
+	    \end{description}
+    \end{formal}
 
 	\section{Notable Challenges}
-		\subsection{Game Loop}
+		\subsection{Game Loop} \label{sec:gameloopChallenges}
 			Constructing the game loop is a seemingly simple task. In essence, it is a callback that some timer would make a call to at some fixed interval equal to our tick-rate. However, there were a number of quirks related to JavaScript's standard API which made this task not as straightforward as initially expected.
 
 			On the client, we are able to use JavaScript's \emph{window.requestAnimationFrame()} \parencite{JsRequestAnimationFrame} function. This is called whenever the canvas is preparing to draw the next frame, giving us the opportunity to update the game state - basically hijacking the internal loop used within the browser. This technique worked during the early stages of development, but when we sought to run the game on the browser; it soon became apparent that obviously this function wouldn't exist in a Node.js environment. So, a separate solution needed to be realised.
@@ -57,19 +309,19 @@
 
 			Thankfully, after an extortionate amount of research, Node's \texttt{child\_process} module \parencite{nodeChildProcess} was discovered and successfully integrated into our game sever - after much hassle regarding getting it to build correct with our React Universally workflow.
 
-			In short, this Node module allows us to create a fork of an entirely new, and separate Node process which can communicate with our main process. Not only did this allow us to execute our artificial intelligence's simulations without blocking our game loop, but it also reduced the time in which we kept our Node event-loop occupied. It is critical for our Node event-loop to not be used for computationally demanding tasks, as they prevent our server from processing time-sensitive requests such as processing actual user-input or even serving up the application's static files.
+			In short, this Node module allows us to create a fork of an entirely new, and separate Node process which can communicate with our main process. Not only did this allow us to execute our artificial intelligence's simulations without blocking our game loop, but it also reduced the time in which we kept our Node event loop occupied. It is critical for our Node event loop to not be used for computationally demanding tasks, as they prevent our server from processing time-sensitive requests such as processing actual user-input or even serving up the application's static files.
 
-			Despite this, it still seemed as though our artificial intelligence was preventing out event-loop from spinning fast enough. After extensive debugging, it was determined that the cause for this delay was due to the fact lag compensation was being applied after we had received the suggested move from our artificial intelligence. This greatly hindered the game's experience, as it made game-play sluggish and inaccurate; obviously this type of behaviour was unacceptable.
+			Despite this, it still seemed as though our artificial intelligence was preventing out event loop from spinning fast enough. After extensive debugging, it was determined that the cause for this delay was due to the fact lag compensation was being applied after we had received the suggested move from our artificial intelligence. This greatly hindered the game's experience, as it made game-play sluggish and inaccurate; obviously this type of behaviour was unacceptable.
 
-			This spawned a large-scale redesign regarding how the game lobby class dealt with the game state. Previously, the lobby, and therefore the main thread, would not only be responsible for running our tick updates to the state, but also for applying the sequence of updates required during lag compensation. However, the greater amount of time we have to compensate for equals a greater amount of time it takes to perform the compensation. This caused our Node event-loop to get severely, and frequently held-up.
+			This spawned a large-scale redesign regarding how the game lobby class dealt with the game state. Previously, the lobby, and therefore the main thread, would not only be responsible for running our tick updates to the state, but also for applying the sequence of updates required during lag compensation. However, the greater amount of time we have to compensate for equals a greater amount of time it takes to perform the compensation. This caused our Node event loop to get severely, and frequently held-up.
 
 			The problem was solved thanks to the development of our \texttt{StateController} class. Each game lobby instance would, within its constructor, instantiate a new instance of this \texttt{StateController} class. Within this \texttt{StateController} instance would live a separate process that was solely dedicated to applying individual updates to the game state. For a more in-depth description, see \fullref{sec:lobbyConcurrency}.
 
 		\subsection{Technology Integration}
 			Some of the most prevalent issues faced were those indirectly related to the project. Specifically the issues that came about due to the discretional use of third-party libraries, and other technologies.
 
-			\subsubsection{Redux}
-				Redux played a pretty superb job in handling our state. It kept our client's view layer in touch with the current game state (see \fullref{redux}). It even played a critical role in many of the tasks which occurred behind the scenes - those which weren't directly related to our game-state. Despite its successful integration into our application, it was the spawn of many challenges.
+			\subsubsection{Redux} \label{sec:reduxIntegration}
+				Redux played a pretty superb job in handling our state. It kept our client's view layer in touch with the current game state (see \fullref{sec:coreTechnologies}). It even played a critical role in many of the tasks which occurred behind the scenes - those which weren't directly related to our game-state. Despite its successful integration into our application, it was the spawn of many challenges.
 
 				For example, Redux is not natively equipped to deal with asynchronous events; such as communicating with the server, or detecting user keyboard input. Fortunately, there exist many additional libraries which tackle this problem. One of the asynchronous libraries is Redux Saga \parencite{reduxSaga}.
 
