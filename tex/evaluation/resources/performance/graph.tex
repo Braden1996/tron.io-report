@@ -1,0 +1,56 @@
+\makeatletter
+\def\relativepath{\import@path}
+\makeatother
+
+\thispagestyle{empty}
+\begin{figure}[h]
+	\begin{tikzpicture}
+		\tikzstyle{every node}=[font=\small]
+    \begin{axis}[
+			title={Tick Update Performance},
+			width=\textwidth,
+			height=8cm,
+			xmajorgrids,
+			ymajorgrids,
+			major grid style={draw=black!8},
+			axis x line*=bottom,
+			axis y line*=left,
+			tickwidth=0pt,
+			enlarge x limits=0.15,
+			scaled y ticks = false,
+			y tick label style={
+				/pgf/number format/fixed,
+				/pgf/number format/1000 sep = \thinspace % Optional if you want to replace comma as the 1000 separator 
+			},
+			xlabel={Elapsed Round time (milliseconds)},
+			ylabel={Update Duration (milliseconds)},
+			cycle multi list={Dark2-8},
+			legend style={
+				at={(0.0125,1)},
+				anchor=north west,
+				legend columns=1
+			}
+		]
+
+			\foreach \p in {1, 2, 4, 8, 12, 16} {
+				\edef\temp{\noexpand\addlegendentry{\p\ \ifstrequal{\p}{1}{player}{players}}}
+
+				\addplot +[
+					line width=0.5mm,
+					point meta=y,
+					mark size=1.15mm,
+					discard if not={players}{\p},
+					%error bars/error bar style={red},
+					%error bars/.cd,
+					%	y dir = both,
+					%	y explicit,
+				] table [x=starttime, y=durationaverage, y error=durationstd, col sep=comma] {\relativepath data.csv};
+				\temp
+			}
+	
+			%\legend{1 player, 2 players, 4 players, 8 players, 12 players, 16 players}
+		\end{axis}
+	\end{tikzpicture}
+	\captionsetup{justification=centerlast, margin=10ex, labelfont=bf, textfont=it, format=plain, labelformat=default, labelsep=endash, font=small}
+	\caption{A graph depicting the impact to the performance of our game's tick updates with relation to the number of total connected players and the elapsed round time.}
+\end{figure}

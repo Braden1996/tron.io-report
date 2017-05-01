@@ -6,13 +6,37 @@
 
 \usepackage{geometry}
 
+\usepackage{etoolbox}
+
+% Plot data - draw pretty graphs
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\pgfplotsset{compat=newest}
+\usepgfplotslibrary{colorbrewer}
+\pgfplotsset{cycle list/Dark2-8}
+
+% https://tex.stackexchange.com/questions/98003/filter-rows-from-a-table
+\pgfplotsset{
+  discard if not/.style 2 args={
+    x filter/.code={
+      \edef\tempa{\thisrow{#1}}
+      \edef\tempb{#2}
+      \ifx\tempa\tempb
+      \else
+        \def\pgfmathresult{inf}
+      \fi
+    }
+  }
+}
+
 \usepackage[subpreambles=true]{standalone}
 
-\addbibresource{tex/refs.bib}
+\addbibresource{refs.bib}
 \addbibresource{tex/introduction/refs.bib}
 \addbibresource{tex/background/refs.bib}
 \addbibresource{tex/design/refs.bib}
 \addbibresource{tex/implementation/refs.bib}
+\addbibresource{tex/evaluation/refs.bib}
 
 \begin{document}
 	\newgeometry{centering}
