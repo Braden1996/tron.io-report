@@ -1,0 +1,13 @@
+\documentclass{standalone}
+
+% https://tex.stackexchange.com/questions/66504/pgfplotstable-longtable-with-caption-and-repeating-header
+
+\begin{document}
+  \begin{figure}[!htbp]
+    \begin{formal}
+      \verbatiminput{data.csv}
+    \end{formal}
+    \caption{Table of data.}
+    \label{fig:gamePerformanceTable}
+  \end{figure}
+\end{document}
