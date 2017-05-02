@@ -1,8 +1,6 @@
 \makeatletter
 \def\relativepath{\import@path}
 \makeatother
-
-\thispagestyle{empty}
 \begin{tikzpicture}
 	\tikzstyle{every node}=[font=\small]
   \begin{axis}[
@@ -21,7 +19,7 @@
 			/pgf/number format/fixed,
 			/pgf/number format/1000 sep = \thinspace % Optional if you want to replace comma as the 1000 separator 
 		},
-		xlabel={Elapsed Round time (milliseconds)},
+		xlabel={Elapsed Round Time (milliseconds)},
 		ylabel={Update Duration (milliseconds)},
 		cycle multi list={Dark2-8},
 		legend style={
@@ -47,7 +45,5 @@
 			] table [x=starttime, y=durationaverage, y error=durationstd, col sep=comma] {\relativepath data.csv};
 			\temp
 		}
-
-		%\legend{1 player, 2 players, 4 players, 8 players, 12 players, 16 players}
 	\end{axis}
 \end{tikzpicture}
