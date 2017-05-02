@@ -29,6 +29,9 @@
 % Quick and detailed reference
 \newcommand*{\fullref}[1]{\hyperref[{#1}]{\autoref*{#1}: \emph{\nameref*{#1}} (Page: \pageref*{#1})}}
 
+% Quick and detailed reference
+\newcommand*{\autoandpageref}[1]{\hyperref[{#1}]{\autoref*{#1} (Page: \pageref*{#1})}}
+
 % Fix Citations
 % http://tex.stackexchange.com/questions/1687/hyperlink-name-with-biblatex-authoryear
 \DeclareCiteCommand{\cite}
