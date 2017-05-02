@@ -1,13 +1,41 @@
 \documentclass{standalone}
 
 % https://tex.stackexchange.com/questions/66504/pgfplotstable-longtable-with-caption-and-repeating-header
+\usepackage{pgfplotstable}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
 
 \begin{document}
-  \begin{figure}[!htbp]
-    \begin{formal}
-      \verbatiminput{data.csv}
-    \end{formal}
-    \caption{Table of data.}
-    \label{fig:gamePerformanceTable}
-  \end{figure}
+  \makeatletter
+  \def\relativepath{\import@path}
+  \makeatother
+
+  \pgfplotstableset{
+    empty header/.style={
+      every head row/.style={output empty row},
+    }
+  }
+  \pgfplotstabletypeset[
+  empty header,
+  begin table=\begin{longtable},
+  every first row/.append style={before row={%
+  \caption{This is a Table with Data.}%
+  \label{tab:gamePerformance} \\ \toprule
+  \textbf{Players} & \textbf{Elapsed Round Time}  & \textbf{Update Duration} \\ \toprule    
+  \endfirsthead
+  \multicolumn{3}{l}{\ldots\autoref{tab:gamePerformance} continued from previous page} \\ \toprule
+  \textbf{Players} & \textbf{Elapsed Round Time}  & \textbf{Update Duration} \\ \toprule  
+  \endhead
+  \midrule \multicolumn{3}{r}{{Continued on next page\ldots}} \\ \bottomrule
+  \endfoot
+  \midrule
+  \multicolumn{3}{r}{{Concluded}} \\ \bottomrule
+  \endlastfoot
+  }},%
+  %
+  end table=\end{longtable},
+  col sep=comma,
+  string type,
+  ] {\relativepath rawdata.csv}
 \end{document}
