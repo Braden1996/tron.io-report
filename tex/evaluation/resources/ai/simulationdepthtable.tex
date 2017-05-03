@@ -1,0 +1,41 @@
+\documentclass{standalone}
+
+% https://tex.stackexchange.com/questions/66504/pgfplotstable-longtable-with-caption-and-repeating-header
+\usepackage{pgfplotstable}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+
+\begin{document}
+  \makeatletter
+  \def\relativepath{\import@path}
+  \makeatother
+
+  \pgfplotstableset{
+    empty header/.style={
+      every head row/.style={output empty row},
+    }
+  }
+  \pgfplotstabletypeset[
+  empty header,
+  begin table=\begin{longtable},
+  every first row/.append style={before row={%
+  \caption{Table of results following the experiment described in \fullref{sec:tickUpdatePerformance}.}%
+  \label{tab:aiSimulationDepth} \\ \toprule
+  \textbf{Simulation Depth}  & \textbf{Total Simulations} \\ \toprule    
+  \endfirsthead
+  \multicolumn{2}{l}{\ldots\autoref{tab:aiSimulationDepth} continued from previous page} \\ \toprule
+  \textbf{Simulation Depth}  & \textbf{Total Simulations} \\ \toprule  
+  \endhead
+  \midrule \multicolumn{2}{r}{{Continued on next page\ldots}} \\ \bottomrule
+  \endfoot
+  \midrule
+  \multicolumn{2}{r}{{Concluded}} \\ \bottomrule
+  \endlastfoot
+  }},%
+  %
+  end table=\end{longtable},
+  col sep=comma,
+  string type,
+  ] {\relativepath simulation.csv}
+\end{document}

@@ -303,7 +303,7 @@
 
 			This inspired the idea to migrate to using the Monte Carlo tree search algorithm, as discussed in \fullref{sec:design-ai}. This allowed our AI to only explore branches of the game-tree that seemed promising; ignoring those branches that almost always led to poor outcomes.
 
-		\subsection{AI Concurrency}
+		\subsection{AI Concurrency} \label{sec:aiConcurrency}
 			In the early iterations of the game's artificial intelligence, the move for a computer controller player would prepare to calculate their next move of a tick; limiting the duration of the entire simulation process to at the most \textless 16 milliseconds. However, it soon became very apparent that this was an inadequate amount of time.
 
 			This provoked research into the possibility of running our artificial intelligence in a concurrently with the rest of the game, allowing simulation to take any pre-defined amount of time. Irritatingly, as developing the artificial intelligence was the final stage of the game's development, I then discovered that Node.js is strictly a single-threaded environment. This was an absolutely devastating discovery...
@@ -317,6 +317,18 @@
 			This spawned a large-scale redesign regarding how the game lobby class dealt with the game state. Previously, the lobby, and therefore the main thread, would not only be responsible for running our tick updates to the state, but also for applying the sequence of updates required during lag compensation. However, the greater amount of time we have to compensate for equals a greater amount of time it takes to perform the compensation. This caused our Node event loop to get severely, and frequently held-up.
 
 			The problem was solved thanks to the development of our \texttt{StateController} class. Each game lobby instance would, within its constructor, instantiate a new instance of this \texttt{StateController} class. Within this \texttt{StateController} instance would live a separate process that was solely dedicated to applying individual updates to the game state. For a more in-depth description, see \fullref{sec:lobbyConcurrency}.
+
+		\subsection{AI Timing} \label{sec:aiTiming}
+			Many aspects of the application rely upon the use of concurrency. Concurrency holds many benefits, particularly when it comes to performance. Irritatingly, it massively complicates aspects reliant on determinism. This became particularly evident when implementing the game's artificial intelligence. The artificial intelligence is to operate alongside concurrent tasks, such as updating the game state (see \fullref{sec:lobbyConcurrency}) and for even running the AI simulations (see \fullref{sec:aiConcurrency}).
+
+			\begin{figure}[!htbp]
+				\centering
+				\includegraphics[width=.8\textwidth]{resources/images/aiclosecall.png}
+				\caption{Diagram depicting a \enquote{close-call} situation gone wrong for an artificial intelligence controlled player (red) against a human controlled player (green).}
+			\end{figure}
+			\FloatBarrier
+
+			However, our artificial intelligence was previously designed to run simulations under the assumption it had full control over the exact time in which moves could be played. The AI would spend a fixed amount of time running simulations centred around a turn-based model of our implemented game. Once all players had taken their respective turns, the game state would be updated, using a progress time equal to the minimum time required before changing move, leading to our simulations converging on strategies which could never be carried out. This is because the strategies depended on future moves being played at specific times, these times did not coincide with the fixed amount of time allocated to running the simulations. The solution to this issue was quite simple, the simulation's state update would use a time progression equal to the duration of the previous AI move calculation. This would give some indication as to when our AI would play their next move. Although not a perfect solution, manipulating the time-progression between state updates, did alleviate much of the negative impact.
 
 		\subsection{Technology Integration}
 			Some of the most prevalent issues faced were those indirectly related to the project. Specifically the issues that came about due to the discretional use of third-party libraries, and other technologies.
