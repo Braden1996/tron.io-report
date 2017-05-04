@@ -1,7 +1,28 @@
 \documentclass{standalone}
 
 \begin{document}
-	It is now time to evaluate our implemented application by performing a critical analysis to help determine the extent of our application's fulfilment to the initial project goals. This shall be done by performing a series of both objective and subjective tests aiming to expose its strengths and weaknesses.
+	It is now time to evaluate our implemented application by performing a critical analysis to help determine the extent of our application's fulfilment to the initial project goals. This shall be done by performing a series of both objective and subjective tests aiming to expose its strengths and weaknesses. All experiments are performed on machine with an Intel Core i7 3770K CPU (3.5 GHz) and 16GB RAM (1600 Mhz).
+
+	\begin{figure}[!htbp]
+		\centering
+		\includegraphics[width=\textwidth]{resources/images/inbrowser.png}
+		\caption{Screen capture of the implemented application, demonstrating the game within a web-browser.}
+	\end{figure}
+	\FloatBarrier
+
+	\begin{figure}[!htbp]
+		\centering
+		\includegraphics[width=\textwidth]{resources/images/welcome.png}
+		\caption{Screen capture of the implemented application, demonstrating the game's welcome screen.}
+	\end{figure}
+	\FloatBarrier
+
+	\begin{figure}[!htbp]
+		\centering
+		\includegraphics[width=\textwidth]{resources/images/ingame.png}
+		\caption{Screen capture of the implemented application, demonstrating the game in progress.}
+	\end{figure}
+	\FloatBarrier
 
 	\section{Unit Tests}
 		Unit testing is arguably the most reliable software development technique for the purposes of scrutinizing an application in order to prove its operational correctness. A unit is the smallest testable part of an application, such as an individual function. A unit test is a short code fragment intended to test a single unit of an application.
@@ -46,6 +67,25 @@
 
 		The artificial intelligence also has no explicit means to prevent itself from blocking off \enquote{owned} areas of the game arena. This results in the computer player often making moves that will worsen their total potential lifespan. The issue has been tackled by others (see \fullref{sec:background-google-ai}). but was never included in our implementation.
 
+		As discussed in \fullref{sec:aiConcurrency}, our artificial intelligence calculates moves in a process separate to that running the main application. This functionality works quite well for a game consisting of only several computer players, but begins to fall down when a larger quantity of computer players are introduced. In part, this is due to each computer player being assigned their own process to calculate moves; an architecture which does not scale well, due to the executing computer only have a limited number of cores.
+
 	\section{User Feedback} \label{sec:userFeedback}
-		The implemented game could be objectively perfect, however if users believe that the project fails to hold promise, then our project's investigated ambition would conclude as a failure - indicating the designed techniques fail to perform sufficiently. Therefore, it is worthwhile to collect a sample of user opinions, enabling us to form a concrete understanding of where our application stands. Hence, we introduce 5TODO users to play a few games, then document their opinions by filling in a short survey (see \fullref{fig:userSurvey}).
+		The implemented game could be objectively perfect, however if users believe that the project fails to hold promise, then our project's investigated ambition would conclude as a failure - indicating the designed techniques fail to perform sufficiently. Therefore, it is worthwhile to collect a sample of user opinions, enabling us to form a concrete understanding of where our application stands. Hence, we introduce 5TODO users to play a few games, then document their opinions by having them participate in a short survey, as described in \autoref{fig:userSurvey}.
+
+		\begin{figure}
+			\begin{formal}
+				Please respond to the below questions on a scale from 1-10 (where 1 is strongly disagree, and 10 is strongly agree):
+				\begin{enumerate}
+					\item The graphics of the game appear to run smoothly.
+					\item The game's user interface is functional, with near unnoticeable loading times. 
+					\item Movement around the game arena seemed sufficiently accurate, in response to my input.
+					\item The multiplayer functionality felt responsive, with little indication of latency.
+					\item The computer controller player works well; challenging, but not impossible to beat.
+					\item The foundational mechanics of the game hold promise, and could produce a good game with a little more polish.
+				\end{enumerate}
+				\caption{A series of questions to be surveyed to test participants.} \label{fig:userSurvey}
+			\end{formal}
+		\end{figure}
+
+		For the most part, user feedback (see \autoandpageref{tab:userSurveyResults}) indicates that the game is somewhat a success. Although this is pleasing, it fails to highlight the weak-points of our application.
 \end{document}

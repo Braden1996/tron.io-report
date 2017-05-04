@@ -1,0 +1,41 @@
+\documentclass{standalone}
+
+% https://tex.stackexchange.com/questions/66504/pgfplotstable-longtable-with-caption-and-repeating-header
+\usepackage{pgfplotstable}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{array}
+
+\begin{document}
+  \makeatletter
+  \def\relativepath{\import@path}
+  \makeatother
+
+  \pgfplotstableset{
+    empty header/.style={
+      every head row/.style={output empty row},
+    }
+  }
+  \pgfplotstabletypeset[
+  empty header,
+  begin table=\begin{longtable},
+  every first row/.append style={before row={%
+  \caption{The collective results gathered from the user survey described in \fullref{sec:userFeedback}.}%
+  \label{tab:userSurveyResults} \\ \toprule
+  \textbf{Question 1} & \textbf{Question 2}  & \textbf{Question 3}  & \textbf{Question 4}  & \textbf{Question 5}  & \textbf{Question 6} \\ \toprule    
+  \endfirsthead
+  \multicolumn{6}{l}{\ldots\autoref{tab:userSurveyResults} continued from previous page} \\ \toprule
+  \textbf{Question 1} & \textbf{Question 2}  & \textbf{Question 3}  & \textbf{Question 4}  & \textbf{Question 5}  & \textbf{Question 6} \\ \toprule  
+  \endhead
+  \midrule \multicolumn{6}{r}{{Continued on next page\ldots}} \\ \bottomrule
+  \endfoot
+  \midrule
+  \multicolumn{3}{r}{{Concluded}} \\ \bottomrule
+  \endlastfoot
+  }},%
+  %
+  end table=\end{longtable},
+  col sep=comma,
+  string type,
+  ] {\relativepath results.csv}
+\end{document}

@@ -1,19 +1,20 @@
 \documentclass{standalone}
 
 \begin{document}
+	The project has demonstrated that native web-browsers are a suitable platform for video-game development. This was done by designing and implementing Tron, using a variety of popular game-design techniques. For the most part, the project has been success, although, as with anything, there are definitely areas for improvement. Throughout the remainder of this chapter, we shall elaborate on some potential future work that could be undertaken. This will also give the reader a more concise understanding of what the project lacks.
+
 	\section{Deployment}
+		There are big differences between developing an application and developing an application as a usable product. In particular, deploying a web-application, as a product intended for general users, can require huge amounts of work in designing deployment infrastructure and implementing the necessary software tweaks to accommodate this \enquoute{general} user-base. As it stands, the focus of the project has been on constructing the foundations of Tron, so factors related to wide-scale deployment have not received much attention. Hence, if stability is of any concern, it is not currently suitable for our implementation to be publicly deployed on the internet.
+
 		\subsection{Security}
-			User input hasn't been fully tested/sanitised for malicious intent.
+			Breaches in security are an extremely grave threat to any application that is publicly accessible. It is of the utmost importance that serious consideration be invested into deterring users whom bare malicious intent. With that said, we make critical note identifying that, as of current, the implemented application lacks adequate security measures. In particular, user input has not been extensively sanitised and there is likely to exists potential bugs, which could be triggered by malicious users.
 
 		\subsection{Large-scale performance}
-			Game lobbies should be distributed amongst a cluster, to reduce load when many lobbies are running concurrently.
+			Although the implemented application is capable of an arbitrary number of game lobbies, and connected players, it will most inevitably result in a hindrance to performance. Great attention has gone into designing a concurrent architecture. The ambition of which is to enable the possibility of deployment utilising a cluster of machines; to distribute the load of our computationally expensive tasks.
 
-	\section{Improve AI}
-		The AI is fairly primitive and there exist several enhancements and optimisations which could be implemented. This section shall lightly touch upon some of these.
+	\section{Artificial Intelligence}
+		The implemented artificial intelligence can occasionally outperform human players, but unfortunately it is subject to some rather unusual behaviour (see \fullref{sec:aiCapabilities}). There do exist more advance artificial intelligences for the game of Tron, but their integration would likely result in a computer player that is neigh impossible to beat. Furthermore, one key area for future work is regarding the question as to how we can remedy the timing inaccuracies related to our artificial intelligence.
 
-	\section{Gameplay Features}
-		I've tried to design the current implementation in a flexible manner to reduce the complexity in adding additional features. In particular, this includes things such as player speed, size, colors etc...
-
-		Also the front-end, being built with React, is decoupled into components which can be extended upon without too much hassle. This is a good thing because the DOM can now be 'synced' with the game state.
-
+	\section{Gameplay}
+		As we have repeatedly state, the focus of this project has been on designing and implementing an application which demonstrates the foundational functionality required for multiplayer video-game development. This leaves a lot of room for the addition of feature related purely to entertaining gameplay. To accommodate this, much effort was devoted in constructing an implementation that is both flexible and extendible, so future developers can more feasibly implement modifications. It is once again worth noting that the front-end, being built with React, is decoupled into components that can be extended upon without too much hassle. Also, the game mechanics maintain an individual high-cohesion; reducing reliance on a particular architecture or technique.
 \end{document}
