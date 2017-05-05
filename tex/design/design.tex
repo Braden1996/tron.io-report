@@ -6,7 +6,7 @@
 	Throughout the following chapter, we shall analyse the intricate specifications of our application and accordingly propose sensible design solutions. This will consist of describing the application as a whole, then delving into each of the individual aspects. By the end, the reader should obtain a strong understanding of what exactly our application does along with the utilised core techniques.
 
 	\section{Software Development Process} \label{sec:softwareDevelopmentProcess}
-		Firstly, we shall describe the overall methodology and workflow that have been employed throughout the duration of development. These are of important consideration as they promote both an effective and productive approach to the creation of software. Much of what is to be described is inspired by the ideas expressed in \parencite{pragmaticProgrammer}.
+		Firstly, we shall describe the overall methodology and workflow that have been employed throughout the duration of development. These are of important consideration as they promote both an effective and productive approach to the creation of software. Much of what is to be described is inspired by the ideas expressed in \enquote{The Pragmatic Programmer} \parencite{pragmaticProgrammer}.
 
 		As the application is not a collaborative undertaking, there is little-to-no need in sticking strictly to any specific paradigm or framework for the software development process; as it would most probably lead to unnecessary overhead and distraction from any relevant progress. However, it is still of purpose to state that development most closely resembles the set of principles described under Agile \parencite{beck2001agile}, in that the application's design and implementation occurred concurrently, with continuous adaptation.
 
@@ -30,12 +30,12 @@
 		\subsection{Architecture Overview} \label{sec:architectureOverview}
 			Much of what has been designed is derived from ideas that relate to the game as a whole, that being the overall encompassing architecture. To aid the reader in understanding said content, we shall introduce them to a brief summary of the foundational ideas in which the game is to be built upon.
 
-			At its heart, the game follow a client-server multiplayer game architecture. This is where a single device is designated to be responsible for processing user-input, updating the game state and communicating said game state to the connected players. The connected players are principally responsible for relaying input to the server and rendering graphics based upon the state communicated from the server.
+			At its heart, the game follows a client-server multiplayer game architecture. This is where a single device is designated to be responsible for processing user-input, updating the game state and communicating said game state to the connected players. The connected players are principally responsible for relaying input to the server and rendering graphics based upon the state communicated from the server.
 
 		\subsection{Core Technologies} \label{sec:coreTechnologies}
 			As the game is to be played in a web-browser, we will be making use of the three fundamental web languages; HTML, CSS, and JavaScript. These three languages, and the standards which govern them, allow us to confidently write portable code which will run predictably within the majority of web-browsers. Although, sadly this is not always the case as it is notorious for many web-browsers to not always fully support the most up-to-date standard - assuming it follows it in the first place.
 
-			The primary programming language for our client-side source-code is JavaScript; the standard core web-browser technology for DOM manipulation of a web-page. To help tackle the compatibility issue mentioned above, the all our JavaScript will conform according to the ECMAScript2015 standard \parencite{ECMAScript2015}. It shall then be transpiled to a more universally supported syntax using Babel \parencite{Babel}.
+			The primary programming language for our client-side source-code is JavaScript  the standard core web-browser technology for web-page DOM manipulation. To help tackle the compatibility issue mentioned above, all our JavaScript will conform according to the ECMAScript2015 standard \parencite{ECMAScript2015}. It shall then be transpiled to a more universally supported syntax using Babel \parencite{Babel}.
 
 			Transpiling to JavaScript has become somewhat the norm in the realm of modern web-development. In recent years, many entirely new programming languages have emerged for the sole purpose of being transpiled into JavaScript. For this application, the decision to use an updated standard of JavaScript, as opposed to one of these entirely new languages, is to reduce the amount in which we abstract from the underlying code that is to be executed; removing another layer where issues could arise.
 
@@ -51,13 +51,13 @@
 
 			Thankfully, this is a very common problem faced during web-development, and there already exist many capable candidate solutions. With this in mind, along with the desire to learn a new framework, and the curiosity regarding its applicability in integration with this project; React\parencite{React} and Redux\parencite{Redux} have been employed to help manage the view layer.
 
-			React is a popular JavaScript framework that makes it relatively easy to create advance user-interfaces for web-applications. It allows you to design your application as a set of simple views for each state in your application, and will efficiently update and render only the appropriate components when data changes. In essence, this is done by constructing almost your entire application's view layer within JavaScript by building encapsulated components - each charged with managing their own state.
+			React is a popular JavaScript framework that makes it relatively easy to create advanced user-interfaces for web-applications. It allows you to design your application as a set of simple views for each state in your application, and will efficiently update and render only the appropriate components when data changes. In essence, this is done by constructing almost your entire application's view layer within JavaScript by building encapsulated components - each charged with managing their own state.
 
-			Redux is a separate library, but plays very well when used in conjunction with React. Simply put, it is a predictable state container for JavaScript applications. It aids in allowing the developer to write application that behave in a consistent manner, whilst providing tools to improve the developer's experience in regards to processes such as debugging.
+			Redux is a separate library, but plays very well when used in conjunction with React. Simply put, it is a predictable state container for JavaScript applications. It aids in allowing the developer to write applications that behave in a consistent manner, whilst providing tools to improve the developer's experience in regards to processes such as debugging.
 
 			Redux, in principle, requires the application's state to be stored in an object tree inside a single data \emph{store}. Each state is represented by a single immutable object. Changes to the state tree are made by emitting \emph{actions}. An \emph{action} is an object describing what happened during some event to the state. These \emph{actions} are then used to transform the state tree through the use of \emph{reducers}; a pure function, with \texttt{(state, action) => state} signature, describing how an action transforms the given state into the next state.
 
-			Given that we already have to use JavaScript for our front-end game code, it makes sense to not bring in another language for our back-end. This bears a myriad of benefits, such as not having to deal with the additional quirks of a separate programming language. Also, it eliminates the hassle of maintaining two separate implementations of code that is identical in purpose. This becomes especially relevant later on, when we introduce client-side prediction (see \fullref{clientPrediction}). Hence for the back-end, that is the code which will be executed on a dedicated server, we shall be utilising Node.js\parencite{NodeJs}.
+			Given that we already have to use JavaScript for our front-end game code, it makes sense to not bring in another language for our back-end. This bears a myriad of benefits, such as not having to deal with the additional quirks of a separate programming language. Also, it eliminates the hassle of maintaining two separate implementations of code that are identical in purpose. This becomes especially relevant later on, when we introduce client-side prediction (see \fullref{clientPrediction}). Hence for the back-end, that is the code which will be executed on a dedicated server, we shall be utilising Node.js\parencite{NodeJs}.
 
 			Node.js, is a technology which serves as a JavaScript run-time environment allowing JavaScript to run in standalone, outside of a web-browser. It has become a major proponent of the \enquote{JavaScript everywhere} paradigm, allowing the meat of web-application development to unify around a single programming language. A concise description is provided on the front-page of its website:
 			\begin{formal}
@@ -65,7 +65,7 @@
 			\end{formal}
 
 		\subsection{Boilerplate} \label{sec:boilerplate}
-			Somewhere early on during development, having already settled on the aforementioned technologies, it began more and more difficult to maintain an efficient development workflow. That inspired the decision to transition the project to the use of the React Universally \parencite{ReactUniversally} starter-kit; a boilerplate project with a bare-bones base structure along with various scripts to help automate the tedious build/watch transpile process required for our JavaScript code.
+			Somewhere early on during development, having already settled on the aforementioned technologies, it began to be quite difficult to maintain an efficient development workflow. That inspired the decision to transition the project to the use of the React Universally \parencite{ReactUniversally} starter-kit; a boilerplate project with a bare-bones base structure along with various scripts to help automate the tedious build/watch transpile process required for our JavaScript code.
 
 			React Universally also sets up Server-side rendering with React. This is helpful as it enables the server to perform an initial render of our application's components, then serve the result to the client. This results in the web-page appearing to load faster, as the main layout would've been pre-rendered; so the client user does not experience the initial flickering of DOM elements as the view is mounted.
 
@@ -92,7 +92,7 @@
 			\end{enumerate}
 		\end{formal}
 
-		After carefully assessment of the above criteria, it became possible to develop some concepts and realise them prototype designs. Throughout the remainder of this section, we shall elaborate on these prototypes.
+		After careful assessment of the above criteria, it became possible to develop some concepts and realise them prototype designs. Throughout the remainder of this section, we shall elaborate on these prototypes.
 
 		We conceived the idea to solve both the \enquote{Lobby invitation} and \enquote{Simplistic URL structure} criteria with a single solution. This solution is to allocate the entire URL path to represent a \emph{key} to a single particular Tron game lobby. That is, if a player wants to invite his friends to a game; they would simply append some arbitrary sequence of characters to their URL then forward it to their friends. This solution is very easy for the user to understand. Although, the \emph{privacy} of their game is dependent on the predictability of the chosen lobby key.
 
@@ -135,7 +135,7 @@
 
 		To avoid creating an unnecessary reliance and coupling of the project onto optional technologies, we do not want to meld our internal game code with Redux. Hence, for our client, when we receive a game state update from the server we copy it and commit both the original and copy into the \emph{store}. One of these stored game states will remain immutable, whilst the other will be fully mutable - hence unaware of updates.
 
-		This solution may currently appear rather strange, as at this stage it is too early to introduce the entire reasoning reasoning. However, simply put, it allows us to keep an authoritative state (what is known) and a predictive state (what should be). Our DOM will reflect the authoritative state, whilst the drawn graphics of the game will reflect the predictive state (for more information, see \fullref{sec:lagCompensation}).
+		This solution may currently appear rather strange, as at this stage it is too early to introduce the entire reasoning. However, simply put, it allows us to keep an authoritative state (what is known) and a predictive state (what should be). Our DOM will reflect the authoritative state, whilst the drawn graphics of the game will reflect the predictive state (for more information, see \fullref{sec:lagCompensation}).
 
 		The next major aspect of our game is the game loop. In principle, it is a section of code that runs continuously during game-play, at some interval. User-input is processed, without blocking, during each \emph{tick} of the loop. The remainder of the \emph{tick} is then used to update the game's state and render graphics. It of critical importance, and is arguably the most employed pattern in game-design as it provides a very convenient and deterministic way in which the developer can structure their game.
 
@@ -144,7 +144,7 @@
 		By default, both client and server will have their game loop configured to run at a tick-rate of once every 15 milliseconds - approximately 66 times a second. \footnote{This is considered the standard for video-games. In most cases, a faster rate does not provide any distinguishable benefit.}
 
 		\subsection{Collision Detection} \label{sec:collisionDetection}
-			Many existing Tron implementations internally use a grid-based arena, that is a play occupies an entire whole cell of the arena. This enables collision look-ups to be performed in constant time, by simply indexing an array. However, our implementation allows players to move with an incredibly high-degree of precision \parencite{JsNumbers}. Unfortunately, this does complicate collision lookups.
+			Many existing Tron implementations internally use a grid-based arena, that is a player occupies an entire single cell of the arena. This enables collision look-ups to be performed in constant time, by simply indexing an array. However, our implementation allows players to move with an incredibly high-degree of precision \parencite{JsNumbers}. Unfortunately, this does complicate collision lookups.
 
 			Instead of checking for collisions against every object in the arena, we have utilised the uniform grid spatial data-structure. This allows us to divide the arena into a grid of arrays, where each array holds references to the objects that reside within its bounded space. Thus, when checking for a collision, we only need to check against objects that are held within the array(s) that our target object intersects with; reducing the search space quite substantially.
 
@@ -200,7 +200,7 @@
 		To further reduce the latency of communication, we can also reduce the payload size of each state transmission. This is made possible by identifying that over the course of several ticks, the game state remains largely unchanged. Knowing this, we are able to keep in memory the last state communicated to each player and when we need to transmit, just calculate a snapshot of the differences \footnote{We calculate and apply the differences using \emph{fast-json-patch}\parencite{FastJsonPatch}.} between the current state and the last one which was sent. We also don't bother sending the cache, and instead simply regenerate it on the client - which isn't too expensive of an operation, and doesn't hinder our server's authoritative game state.
 
 		\label{designCommunicationTechnologies}
-		As introduced within the background section (see \fullref{sec:browserTechnologies}) there exist several technologies capable of handling the actual communication with a web-server; most notably Web-Sockets and Web-RTC. However, we have chosen to use Web-Sockets as our chosen communicated technology. This is because it is well supported, well documented and is does not provide us with extra hassle as we already have a dedicated game-server.
+		As introduced within the background section (see \fullref{sec:browserTechnologies}) there exist several technologies capable of handling the actual communication with a web-server; most notably WebSockets and Web-RTC. However, we have chosen to use WebSockets as our communication technology. This is because it is well supported, well documented and is does not provide us with extra hassle as we already have a dedicated game-server.
 
 		\subsection{Game Lobbies and Concurrency} \label{sec:lobbyConcurrency}
 			Our web-application is intended to support the simultaneous play of numerous Tron game lobbies. This is to allow separate groups of users to each be allocated their own game instance, allowing them to play with one-another - away from undesired guests.
@@ -217,7 +217,7 @@
 
 			However, Node.js is a single-threaded environment, which means that only one request can be processed at any given time. This requires all forms of I/O, and other computationally expensive tasks, to be performed asynchronously; to avoid creating a lock on Node's event loop.
 
-			Knowing this does create concern, as our game will include tasks that are very computationally expensive - such as the aforementioned state updates, along with others including artificial intelligence. However, Node.js is equipped with a module, called \texttt{child\_process} \parencite{nodeChildProcess}. This module is of vital importance, as it enables us to delegate the computationally expensive tasks onto a separate process that shall be executed in in parallel - without blocking our main Node.js event loop.
+			Knowing this does create concern, as our game will include tasks that are very computationally expensive - such as the aforementioned state updates, along with others including artificial intelligence. However, Node.js is equipped with a module, called \texttt{child\_process} \parencite{nodeChildProcess}. This module is of vital importance, as it enables us to delegate the computationally expensive tasks onto a separate process that shall be executed in parallel - without blocking our main Node.js event loop.
 
 			Therefore, our state controller will delegate all state updates to a dedicated Node.js child process; keeping the event loop of our main Node.js process spinning fast.
 
